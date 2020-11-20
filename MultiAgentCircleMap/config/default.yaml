@@ -1,0 +1,4 @@
+ros_rate: 20
+sub_imu_topic: /mavros/imu/data
+sub_odometry_topic: /mavros/optical_flow
+sub_image_topic: /camera/image_raw

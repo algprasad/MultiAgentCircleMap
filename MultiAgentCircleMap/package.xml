@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>MultiAgentCircleMap</name>
+  <version>0.1.0</version>
+  <description>Enter Package Description here</description>
+  <maintainer email="lanterve@asu.edu">ALG Prasad</maintainer>
+  <license>BSD</license>
+  <url type="website">https://github.com/algprasad</url>
+  <url type="bugtracker">https://github.com//issues</url>
+  <author email="lanterve@asu.edu">ALG Prasad</author>
+
+  <!-- buildtool_depend: dependencies of the build process -->
+  <buildtool_depend>catkin</buildtool_depend>
+  <!-- build_depend: dependencies only used in source files -->
+  <build_depend>boost</build_depend>
+  <!-- depend: build, export, and execution dependency -->
+  <depend>eigen</depend>
+  <depend>roscpp</depend>
+  <depend>sensor_msgs</depend>
+
+  <build_depend>roslint</build_depend>
+</package>

@@ -1,0 +1,8 @@
+<launch>
+
+  <!-- Launch ROS Package Template Node -->
+  <node pkg="MultiAgentCircleMap" type="MultiAgentCircleMap" name="MultiAgentCircleMap" output="screen">
+    <rosparam command="load" file="$(find MultiAgentCircleMap)/config/default.yaml" />
+  </node>
+
+</launch>
