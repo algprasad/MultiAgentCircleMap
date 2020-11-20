@@ -1,5 +1,5 @@
-#Installation instructions for this underwater_localization package
+#Installation instructions for this package
 Dependencies: 
-1) yaml-cpp (write version)
+1) yaml-cpp
 2) eigen3 
 3) 
