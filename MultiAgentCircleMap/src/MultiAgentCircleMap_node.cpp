@@ -14,10 +14,8 @@ int main(int argc, char** argv)
 
   while(ros::ok()){
 
-
-
-
-
+      single_robot_mapper.updateMap();
+      //single_robot_mapper.publishImagewithIDs();
       ros::spinOnce();
 
   }

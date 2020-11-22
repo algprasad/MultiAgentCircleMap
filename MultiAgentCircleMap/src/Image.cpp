@@ -18,5 +18,20 @@ void Image::detectCircles() {
             // (min_radius & max_radius) to detect larger circles
     );
     CircleVec circle_vec(circles);
+    image_detected_circles_ = image_; //so that the image_detected_circles has the circles highlighted
+
+}
+
+void Image::writeLandmarkID() {
+
+    for(int i =0; i< this->getSize(); i++){
+        Eigen::Vector2d pixel = circle_vec_.circle_vec_[i].pixel_coords_.top();
+        cv::putText(image_detected_circles_, std::to_string(circle_vec_.circle_vec_[i].index_),cvPoint(pixel[0], pixel[1]), cv::FONT_HERSHEY_COMPLEX_SMALL, 0.5, cv::Scalar(255,255,255), 1, CV_AA );
+    }
+
+}
+
+unsigned int Image::getSize() {
+    return circle_vec_.circle_vec_.size();
 
 }

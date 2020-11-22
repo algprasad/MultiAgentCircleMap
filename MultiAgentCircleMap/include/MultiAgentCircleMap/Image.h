@@ -13,11 +13,15 @@
 #include <sensor_msgs/image_encodings.h>
 
 class Image {
-    cv::Mat image_;
-    cv::Mat image_detected_circles_;
+    cv::Mat image_; //main raw image
+    cv::Mat image_detected_circles_; //image with circles and their IDs marked
+public:
+
     CircleVec circle_vec_;  //vector of circles associated with the image
 
 public:
+    unsigned int size_; //size of circle_vec
+    
     //Constructor to construct image with cv::Mat
     Image(cv::Mat image): image_(image){ detectCircles(); }
 
@@ -26,25 +30,32 @@ public:
 
 
 public:
-    /* Detect circles in the current image*/
+    /** Detect circles in the current image and add to circle_vec_ **/
     void detectCircles();
 
+    /** Constructor to construct image with sensor_msgs::Image*/
+    Image(sensor_msgs::Image msg){
+        cv_bridge::CvImagePtr cv_ptr;
+        try
+        {
+            cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
+        }
+        catch (cv_bridge::Exception& e)
+        {
+            ROS_ERROR("cv_bridge exception: %s", e.what());
+            return;
+        }
+        image_ = cv_ptr->image;
+        detectCircles();
+    }
+    unsigned int getSize();
 
-//Constructor to construct image with sensor_msgs::Image
-Image(sensor_msgs::Image msg){
-    cv_bridge::CvImagePtr cv_ptr;
-    try
-    {
-        cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
+    void writeLandmarkID();
+    cv::Mat getImageWithDetectedCircles(){
+        return image_detected_circles_;
     }
-    catch (cv_bridge::Exception& e)
-    {
-        ROS_ERROR("cv_bridge exception: %s", e.what());
-        return;
-    }
-    image_ = cv_ptr->image;
-    detectCircles();
-}
+
+
 
 };
 

@@ -12,7 +12,6 @@ Objects and Functions related to Vector of circles
 #include "Circle.h"
 
 class CircleVec {
-    std::vector<Circle> circle_vec_;
 public:
     //default constructor
     CircleVec(){}
@@ -31,6 +30,7 @@ public:
     }
 
 
+    std::vector<Circle> circle_vec_;
 };
 
 
