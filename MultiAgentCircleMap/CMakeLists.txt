@@ -18,7 +18,7 @@ find_package(catkin REQUIRED
   COMPONENTS
     roscpp
     sensor_msgs
-    roslint
+    roslint image_transport cv_bridge sensor_msgs
 )
 #find_package(Eigen REQUIRED)
 find_package(OpenCV REQUIRED)
@@ -83,7 +83,7 @@ include_directories(
 add_executable(${PROJECT_NAME}
   src/${PROJECT_NAME}_node.cpp
         src/RosHandle.cpp
-)
+        src/Image.cpp include/MultiAgentCircleMap/Image.h src/Circle.cpp include/MultiAgentCircleMap/Circle.h src/CircleVec.cpp include/MultiAgentCircleMap/CircleVec.h src/Graph.cpp include/MultiAgentCircleMap/Graph.h src/SingleRobotMapper.cpp include/MultiAgentCircleMap/SingleRobotMapper.h src/MultiRobotMapper.cpp include/MultiAgentCircleMap/MultiRobotMapper.h)
 #target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_14)
 
 ## Add dependencies to exported targets, like ROS msgs or srvs

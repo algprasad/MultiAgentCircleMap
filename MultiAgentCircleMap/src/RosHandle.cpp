@@ -3,16 +3,18 @@
 
 // STD
 #include <string>
+#include <MultiAgentCircleMap/Image.h>
 
 namespace MultiAgentCircleMap {
 
 RosHandle::RosHandle(ros::NodeHandle& nodeHandle)
-    : nodeHandle_(nodeHandle), rate_(ros_rate_hz)
+    : nodeHandle_(nodeHandle), rate_(20) //assigning temporary value which will be overwritten by the rosparam
 {
   if (!readParameters()) {
     ROS_ERROR("Could not read parameters.");
     ros::requestShutdown();
   }
+  rate_ = ros_rate_hz;
   imu_subscriber_ = nodeHandle_.subscribe(imu_subscriber_topic_, 1,
                                           &RosHandle::imuCallback, this);
 
@@ -61,8 +63,11 @@ void RosHandle::odometryCallback(const geometry_msgs::PoseStamped &message) {
 }
 
 void RosHandle::imageCallback(const sensor_msgs::Image &message) {
-    ros_data_.setImage(message);
+    ros_data_.setROSImage(message);
     ros_data_.setBoolNewImage(true);
+    //Make the image object and
+    Image image(message);
+    ros_data_.setImage(image);
 
 }
 

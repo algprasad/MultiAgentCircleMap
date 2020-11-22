@@ -5,6 +5,7 @@
 #include <eigen3/Eigen/Geometry>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/Image.h>
+#include "Image.h"
 //#include "ArUcoMarker.h"
 
 namespace MultiAgentCircleMap{
@@ -17,7 +18,8 @@ public:
 
     Eigen::Vector3d angular_velocity_;
     Eigen::Vector3d linear_velocity_;
-    sensor_msgs::Image image_;
+    sensor_msgs::Image ros_image_;
+    Image image_;
     bool new_angular_velocity_;
     bool new_linear_velocity_;
     bool new_image_;
@@ -35,7 +37,12 @@ public:
 
     }
 
-    void setImage(sensor_msgs::Image image){
+    void setROSImage(sensor_msgs::Image image){
+        this->ros_image_ = image;
+
+    }
+
+    void setImage(Image image){
         this->image_ = image;
 
     }
