@@ -10,11 +10,12 @@ int main(int argc, char** argv)
   ros::NodeHandle node_handle("~");
 
   MultiAgentCircleMap::RosHandle ros_handle(node_handle);
-  SingleRobotMapper single_robot_mapper(ros_handle);  //ros_handle_ has all the latest information from ros in ros_data_ and gets updated every cycle
+  SingleRobotMapper single_robot_mapper;  //ros_handle_ has all the latest information from ros in ros_data_ and gets updated every cycle
 
   while(ros::ok()){
 
-      single_robot_mapper.updateMap();
+      if(ros_handle.ros_data_.isNewImage()) single_robot_mapper.updateMap(ros_handle);
+      ros_handle.ros_data_.resetBools();
       //single_robot_mapper.publishImagewithIDs();
       ros::spinOnce();
 

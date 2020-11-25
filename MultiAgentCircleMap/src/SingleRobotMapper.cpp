@@ -4,10 +4,11 @@
 
 #include "MultiAgentCircleMap/SingleRobotMapper.h"
 #include "MultiAgentCircleMap/Hungarian.h"
+#define DEBUG 1
 
 /** Cost matrix based on Pixel distance */
-std::vector<std::vector<double> > SingleRobotMapper::getPixelCostMatrixHungarianAlgo(){
-    double THRESHOLD_PIXEL_DISTANCE = this->ros_handle_.threshold_pixel_distance_;
+std::vector<std::vector<double> > SingleRobotMapper::getPixelCostMatrixHungarianAlgo(double threshold_pixel_distance){
+    double THRESHOLD_PIXEL_DISTANCE = threshold_pixel_distance;
     std::vector<std::vector<double> > cost_matrix;
     for(int i =0; i< prev_image_.getSize(); i++){
         std::vector<double> temp_cost_row;
@@ -30,8 +31,8 @@ std::vector<std::vector<double> > SingleRobotMapper::getPixelCostMatrixHungarian
 
 
 
-void SingleRobotMapper::updateMap() {
-    current_image_ = ros_handle_.ros_data_.image_;
+void SingleRobotMapper::updateMap(MultiAgentCircleMap::RosHandle ros_handle) {
+    current_image_ = ros_handle.ros_data_.image_;
     if(this->first_image_){
         global_circles_vec_.circle_vec_ = current_image_.circle_vec_.circle_vec_;
         first_image_ = false;
@@ -39,7 +40,7 @@ void SingleRobotMapper::updateMap() {
     else{
 
         //get cost matrix for the Hungarian Algo
-        std::vector<std::vector<double> > cost_matrix_hung = getPixelCostMatrixHungarianAlgo();
+        std::vector<std::vector<double> > cost_matrix_hung = getPixelCostMatrixHungarianAlgo(ros_handle.threshold_pixel_distance_);
 
         //main Hungarian Algo step
         std::vector<int > assignment = getAssignment(cost_matrix_hung);
@@ -52,8 +53,9 @@ void SingleRobotMapper::updateMap() {
         assignNewID();
 
     }
-    this->publishImagewithIDs();
 
+    this->publishImagewithIDs(ros_handle);
+    if(DEBUG) std::cout<<global_circles_vec_.circle_vec_.size()<<std::endl;
     prev_image_ = current_image_;
 }
 
@@ -83,8 +85,8 @@ void SingleRobotMapper::assignCorrepondingPrevId(std::vector<int> &assignment,
 }
 
 void SingleRobotMapper::assignNewID() {
-    for(int i =0; i< current_image_.getSize(); i++){
-        if(current_image_.circle_vec_.circle_vec_[i].index_ == 0){ //new circle with previously unknown association
+    for(int i =0; i< current_image_.circle_vec_.circle_vec_.size(); i++){
+        if(current_image_.circle_vec_.circle_vec_[i].index_ == 0 || !current_image_.circle_vec_.circle_vec_[i].hasIndex_){ //new circle with previously unknown association
             current_image_.circle_vec_.circle_vec_[i].index_ = global_circles_vec_.circle_vec_.size() + 1 ;
             current_image_.circle_vec_.circle_vec_[i].setBoolHasIndex(true);
             global_circles_vec_.circle_vec_.push_back(current_image_.circle_vec_.circle_vec_[i]); //TAKES CARE OF ADDING NEW CIRCLES TO THE global_circles
@@ -93,8 +95,10 @@ void SingleRobotMapper::assignNewID() {
 
 }
 
-void SingleRobotMapper::publishImagewithIDs() {
-    ros_handle_.pubDetectedCircles(current_image_.getImageWithDetectedCircles());
+void SingleRobotMapper::publishImagewithIDs(MultiAgentCircleMap::RosHandle& ros_handle) {
+    ros_handle.ros_data_.image_.circle_vec_ = current_image_.circle_vec_;
+    ros_handle.ros_data_.image_.writeLandmarkID();
+    ros_handle.pubDetectedCircles(current_image_.getImageWithDetectedCircles());
 }
 
 

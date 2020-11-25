@@ -40,10 +40,12 @@ public:
     void setROSImage(sensor_msgs::Image image){
         this->ros_image_ = image;
 
+
     }
 
     void setImage(Image image){
         this->image_ = image;
+
 
     }
 

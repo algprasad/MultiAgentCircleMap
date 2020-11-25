@@ -9,7 +9,7 @@
 void Image::detectCircles() {
 
     cv::Mat gray;
-    cv::cvtColor(image_, gray, cv::COLOR_BGR2GRAY);
+    cv::cvtColor(cv_image_, gray, cv::COLOR_BGR2GRAY);
     medianBlur(gray, gray, 5);
     std::vector<cv::Vec3f> circles;
     cv::HoughCircles(gray, circles, cv::HOUGH_GRADIENT, 1,
@@ -18,7 +18,11 @@ void Image::detectCircles() {
             // (min_radius & max_radius) to detect larger circles
     );
     CircleVec circle_vec(circles);
-    image_detected_circles_ = image_; //so that the image_detected_circles has the circles highlighted
+    this->circle_vec_ = circle_vec;
+    this->size_ = circles.size();
+    cv_image_detected_circles_ = cv_image_; //so that the image_detected_circles has the circles highlighted
+
+
 
 }
 
@@ -26,7 +30,7 @@ void Image::writeLandmarkID() {
 
     for(int i =0; i< this->getSize(); i++){
         Eigen::Vector2d pixel = circle_vec_.circle_vec_[i].pixel_coords_.top();
-        cv::putText(image_detected_circles_, std::to_string(circle_vec_.circle_vec_[i].index_),cvPoint(pixel[0], pixel[1]), cv::FONT_HERSHEY_COMPLEX_SMALL, 0.5, cv::Scalar(255,255,255), 1, CV_AA );
+        cv::putText(cv_image_detected_circles_, std::to_string(circle_vec_.circle_vec_[i].index_), cvPoint(pixel[0], pixel[1]), cv::FONT_HERSHEY_COMPLEX_SMALL, 0.5, cv::Scalar(255, 255, 255), 1, CV_AA );
     }
 
 }

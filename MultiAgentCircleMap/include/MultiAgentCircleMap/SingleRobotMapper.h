@@ -12,7 +12,7 @@ Main class for the algorithm for mapping with single robot (Local Map)
 #include "CircleVec.h"
 
 class SingleRobotMapper {
-    MultiAgentCircleMap::RosHandle ros_handle_;
+    //MultiAgentCircleMap::RosHandle ros_handle_;
     Graph graph_; //global graph
     CircleVec global_circles_vec_;  //global main CircleVec
 
@@ -23,15 +23,19 @@ class SingleRobotMapper {
     Image current_image_;
 
 public:
+    //Default constructor
+    SingleRobotMapper(): first_image_(true){};
 
-    SingleRobotMapper(MultiAgentCircleMap::RosHandle ros_handle):ros_handle_(ros_handle), first_image_(true){}
+    //SingleRobotMapper(MultiAgentCircleMap::RosHandle& ros_handle):ros_handle_(ros_handle), first_image_(true){}
 
-    std::vector<std::vector<double> > getPixelCostMatrixHungarianAlgo();
+
+
+    std::vector<std::vector<double> > getPixelCostMatrixHungarianAlgo(double threshold_pixel_distance);
     std::vector<int> getAssignment(std::vector<std::vector<double> >& cost_matrix);
     void assignCorrepondingPrevId(std::vector<int>& assignment, std::vector<std::vector<double> > cost_matrix);
     void assignNewID();
-    void updateMap();
-    void publishImagewithIDs();
+    void updateMap(MultiAgentCircleMap::RosHandle ros_handle);
+    void publishImagewithIDs(MultiAgentCircleMap::RosHandle& ros_handle);
 
 
 };
