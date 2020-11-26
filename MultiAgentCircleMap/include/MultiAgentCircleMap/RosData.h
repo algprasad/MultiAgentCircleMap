@@ -16,13 +16,18 @@ namespace MultiAgentCircleMap{
 struct RosData {
 public:
 
+    /** ROS data variables */
     Eigen::Vector3d angular_velocity_;
     Eigen::Vector3d linear_velocity_;
     sensor_msgs::Image ros_image_;
+    geometry_msgs::PoseStamped robot_pose_;
     Image image_;
+
+    /** Bools to make sure new data is used*/
     bool new_angular_velocity_;
     bool new_linear_velocity_;
     bool new_image_;
+    bool new_robot_pose_;
 
     //ArUco Marker
     //ArUcoMarker aruco_marker_;  //aruco marker in the current image obtained from ros
@@ -39,14 +44,14 @@ public:
 
     void setROSImage(sensor_msgs::Image image){
         this->ros_image_ = image;
-
-
     }
 
     void setImage(Image image){
         this->image_ = image;
+    }
 
-
+    void setRobotPose(geometry_msgs::PoseStamped robot_pose) {
+        robot_pose_ = robot_pose;
     }
 
     void resetBools(){
@@ -77,6 +82,10 @@ public:
 
     bool isNewImage(){
         return this->new_image_;
+    }
+
+    bool isNewRobotPose(){
+        return this->new_robot_pose_;
     }
 
 

@@ -24,7 +24,7 @@ RosHandle::RosHandle(ros::NodeHandle& nodeHandle)
   image_subscriber_ = nodeHandle_.subscribe(image_subscriber_topic_, 1,
                                             &RosHandle::imageCallback, this);
 
-  odometry_subscriber_ = nodeHandle_.subscribe(odometry_subscriber_topic_, 1, &RosHandle::odometryCallback, this );
+  odometry_subscriber_ = nodeHandle_.subscribe(robot_pose_subscriber_topic_, 1, &RosHandle::PoseCallback, this );
 
   image_transport::ImageTransport it(nodeHandle_);
   pub_detected_circles_ = it.advertise(detected_circles_publisher_topic_, 1);
@@ -43,7 +43,7 @@ bool RosHandle::readParameters()
   if (!nodeHandle_.getParam("ros_rate", ros_rate_hz_)) return false;
   if (!nodeHandle_.getParam("sub_imu_topic", imu_subscriber_topic_)) return false;
   if (!nodeHandle_.getParam("sub_image_topic", image_subscriber_topic_)) return false;
-  if (!nodeHandle_.getParam("sub_odometry_topic", odometry_subscriber_topic_)) return false;
+  if (!nodeHandle_.getParam("robot_pose_topic", robot_pose_subscriber_topic_)) return false;
   if (!nodeHandle_.getParam("pub_detected_circles_image", detected_circles_publisher_topic_)) return false;
   if (!nodeHandle_.getParam("threshold_pixel_distance", threshold_pixel_distance_)) return false;
 
@@ -64,18 +64,19 @@ bool RosHandle::serviceCallback(std_srvs::Trigger::Request& request,
   return true;
 }
 
-void RosHandle::odometryCallback(const geometry_msgs::PoseStamped &message) {
-    ros_data_.setLinearVelocity(message);
-    ros_data_.setBoolNewLinearVelocity(true);
+void RosHandle::PoseCallback(const geometry_msgs::PoseStamped &message) {
+    ros_data_.setRobotPose(message);
+    ros_data_.new_robot_pose_ = true;
 
 }
 
 void RosHandle::imageCallback(const sensor_msgs::Image &message) {
     ros_data_.setROSImage(message);
     ros_data_.setBoolNewImage(true);
-    //Make the image object and
-    Image image(message);
-    ros_data_.setImage(image);
+    //Make the image object and assign the robot pose to the image object
+    Image image(message, ros_data_.robot_pose_); //
+    //Image image(message);
+    if(image.size_ > 0) ros_data_.setImage(image); //to make sure that when the circles are not there unnecessary calculations are not done
 
 }
 
@@ -90,7 +91,7 @@ bool RosHandle::readParametersYAML() {
     ros_rate_hz_ = config["ros_rate"].as<double_t >();
     imu_subscriber_topic_ = config["sub_imu_topic"].as<std::string>();
     image_subscriber_topic_ = config["sub_image_topic"].as<std::string>();
-    odometry_subscriber_topic_ = config["sub_odometry_topic"].as<std::string>();
+    robot_pose_subscriber_topic_ = config["robot_pose_topic"].as<std::string>();
     detected_circles_publisher_topic_ = config["pub_detected_circles_image"].as<std::string>();
     threshold_pixel_distance_ = config["threshold_pixel_distance"].as<double_t >();
 

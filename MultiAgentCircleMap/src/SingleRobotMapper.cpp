@@ -4,7 +4,7 @@
 
 #include "MultiAgentCircleMap/SingleRobotMapper.h"
 #include "MultiAgentCircleMap/Hungarian.h"
-#define DEBUG 1
+#define DEBUG 0
 
 /** Cost matrix based on Pixel distance */
 std::vector<std::vector<double> > SingleRobotMapper::getPixelCostMatrixHungarianAlgo(double threshold_pixel_distance){
@@ -55,7 +55,13 @@ void SingleRobotMapper::updateMap(MultiAgentCircleMap::RosHandle ros_handle) {
     }
 
     this->publishImagewithIDs(ros_handle);
-    if(DEBUG) std::cout<<global_circles_vec_.circle_vec_.size()<<std::endl;
+    if(DEBUG && global_circles_vec_.circle_vec_.size() > 5) {
+        std::cout<<global_circles_vec_.circle_vec_.size()<<std::endl;
+        for(int i=0; i< 5; i++){
+            std::cout<<"Global Position: "<<global_circles_vec_.circle_vec_[i].global_position_<<std::endl;
+        }
+    }
+
     prev_image_ = current_image_;
 }
 
@@ -86,7 +92,7 @@ void SingleRobotMapper::assignCorrepondingPrevId(std::vector<int> &assignment,
 
 void SingleRobotMapper::assignNewID() {
     for(int i =0; i< current_image_.circle_vec_.circle_vec_.size(); i++){
-        if(current_image_.circle_vec_.circle_vec_[i].index_ == 0 || !current_image_.circle_vec_.circle_vec_[i].hasIndex_){ //new circle with previously unknown association
+        if(!current_image_.circle_vec_.circle_vec_[i].hasIndex_){ //new circle with previously unknown association
             current_image_.circle_vec_.circle_vec_[i].index_ = global_circles_vec_.circle_vec_.size() + 1 ;
             current_image_.circle_vec_.circle_vec_[i].setBoolHasIndex(true);
             global_circles_vec_.circle_vec_.push_back(current_image_.circle_vec_.circle_vec_[i]); //TAKES CARE OF ADDING NEW CIRCLES TO THE global_circles

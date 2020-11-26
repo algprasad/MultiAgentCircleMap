@@ -73,7 +73,7 @@ private:
    * IMU topic callback method.
    * @param odometry message given by optical flow
    */
-  void odometryCallback(const geometry_msgs::PoseStamped& message);
+  void PoseCallback(const geometry_msgs::PoseStamped& message);
 
 
     /*!
@@ -99,7 +99,7 @@ private:
 
   //! ROS topic name to subscribe to.
   std::string imu_subscriber_topic_;
-  std::string odometry_subscriber_topic_;
+  std::string robot_pose_subscriber_topic_;
   std::string image_subscriber_topic_;
 
   //! ROS topic names to publish to

@@ -1,6 +1,6 @@
 ros_rate: 20
 sub_imu_topic: /mavros/imu/data
-sub_odometry_topic: /mavros/optical_flow
+robot_pose_topic: /mavros/local_position/pose
 sub_image_topic: /stereo/left/image_rect
 pub_detected_circles_image: /detected_circles
 
