@@ -36,6 +36,9 @@ public:
     void assignNewID();
     void updateMap(MultiAgentCircleMap::RosHandle ros_handle);
     void publishImagewithIDs(MultiAgentCircleMap::RosHandle& ros_handle);
+    void HungarianAssignment(MultiAgentCircleMap::RosHandle ros_handle);
+    void NearestNeighbourAssignment();
+    void assignGlobalID2CurrentVec(std::vector<int> assignment_vec);
 
 
 };

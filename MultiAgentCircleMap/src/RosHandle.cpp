@@ -75,8 +75,7 @@ void RosHandle::imageCallback(const sensor_msgs::Image &message) {
     ros_data_.setROSImage(message);
     ros_data_.setBoolNewImage(true);
     //Make the image object and assign the robot pose to the image object
-    Image image(message, ros_data_.robot_pose_); //
-    //Image image(message);
+    Image image(message, ros_data_.robot_pose_, false);
     if(image.circle_vec_.circle_vec_.size() > 0) ros_data_.setImage(image); //to make sure that when the circles are not there unnecessary calculations are not done
 
 }

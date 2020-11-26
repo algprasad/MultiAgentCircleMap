@@ -56,7 +56,7 @@ public:
     }
 
     /** Constructor to construct image with sensor_msgs::Image and also the robot_pose*/
-    Image(sensor_msgs::Image msg, geometry_msgs::PoseStamped robot_pose): robot_pose_(robot_pose), used_pixels_(false){
+    Image(sensor_msgs::Image msg, geometry_msgs::PoseStamped robot_pose, bool used_pixels): robot_pose_(robot_pose), used_pixels_(used_pixels){
         cv_bridge::CvImagePtr cv_ptr;
         try
         {

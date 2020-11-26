@@ -29,6 +29,66 @@ std::vector<std::vector<double> > SingleRobotMapper::getPixelCostMatrixHungarian
     return cost_matrix;
 }
 
+void SingleRobotMapper::HungarianAssignment(MultiAgentCircleMap::RosHandle ros_handle){
+
+    //get cost matrix for the Hungarian Algo
+    std::vector<std::vector<double> > cost_matrix_hung = getPixelCostMatrixHungarianAlgo(ros_handle.threshold_pixel_distance_);
+
+    //main Hungarian Algo step
+    std::vector<int > assignment = getAssignment(cost_matrix_hung);
+
+
+    //after getting the assignment,  assign the IDs of the circles equal to their counter parts in the previous_circles
+    assignCorrepondingPrevId(assignment, cost_matrix_hung);
+
+    //assign new ID based for all the new landmarks.. //IMP: Also takes care of the adding new circles to the global_circles
+    assignNewID();
+
+}
+
+void SingleRobotMapper::assignGlobalID2CurrentVec(std::vector<int> assignment_vec){
+    for(int i =0; i<current_image_.circle_vec_.circle_vec_.size(); i++){
+        if(assignment_vec[i] != -1){ //that means there is an assignment
+            //set the landmark ID equal to the ID of its global counter part //mostly for visualization purposes
+            current_image_.circle_vec_.circle_vec_[i].setIndex(global_circles_vec_.circle_vec_[assignment_vec[i]].index_);
+            current_image_.circle_vec_.circle_vec_[i].setBoolHasIndex(true);
+        }
+        else{ //i.e. if assignment_vec[i] == -1
+            //assign new ID
+            current_image_.circle_vec_.circle_vec_[i].index_ = global_circles_vec_.circle_vec_.size() + 1 ;
+            current_image_.circle_vec_.circle_vec_[i].setBoolHasIndex(true);
+            global_circles_vec_.circle_vec_.push_back(current_image_.circle_vec_.circle_vec_[i]);
+
+        }
+    }
+
+}
+
+
+void SingleRobotMapper::NearestNeighbourAssignment() {
+    //std::cout<<"Inside Nearest Neighbour";
+    double POSITION_DIST_THRESHOLD = 0.5;
+    std::vector<int> assignment_vec(current_image_.circle_vec_.circle_vec_.size());
+    for(int i =0; i< current_image_.circle_vec_.circle_vec_.size(); i++){
+        double min_distance = INT64_MAX;
+        double assignment = -1;
+        for(int j =0; j< global_circles_vec_.circle_vec_.size(); j++){
+            Eigen::Vector3d temp_diff_vec  = current_image_.circle_vec_.circle_vec_[i].global_position_  - global_circles_vec_.circle_vec_[j].global_position_;
+            double distance = temp_diff_vec.norm();
+            if(distance < min_distance && distance < POSITION_DIST_THRESHOLD) {
+                min_distance = distance;
+                assignment = j;
+            }
+        }
+        assignment_vec[i] = assignment;
+    }
+
+    //TODO function to remove one circle assigned to multiple global circles
+
+    //function to take assign IDs (global IDs for recurring landmarks and new IDs to new landmarks)
+    assignGlobalID2CurrentVec(assignment_vec);
+
+}
 
 
 void SingleRobotMapper::updateMap(MultiAgentCircleMap::RosHandle ros_handle) {
@@ -38,29 +98,11 @@ void SingleRobotMapper::updateMap(MultiAgentCircleMap::RosHandle ros_handle) {
         first_image_ = false;
     }
     else{
-
-        //get cost matrix for the Hungarian Algo
-        std::vector<std::vector<double> > cost_matrix_hung = getPixelCostMatrixHungarianAlgo(ros_handle.threshold_pixel_distance_);
-
-        //main Hungarian Algo step
-        std::vector<int > assignment = getAssignment(cost_matrix_hung);
-
-
-        //after getting the assignment,  assign the IDs of the circles equal to their counter parts in the previous_circles
-        assignCorrepondingPrevId(assignment, cost_matrix_hung);
-
-        //assign new ID based for all the new landmarks.. //IMP: Also takes care of the adding new circles to the global_circles
-        assignNewID();
+        if(current_image_.used_pixels_) HungarianAssignment(ros_handle);  //uses pixel coordinates
+        else NearestNeighbourAssignment();  //uses global position coordiantes of the circle centres
     }
 
     this->publishImagewithIDs(ros_handle);
-    if(DEBUG && global_circles_vec_.circle_vec_.size() > 5) {
-        std::cout<<global_circles_vec_.circle_vec_.size()<<std::endl;
-        for(int i=0; i< 5; i++){
-            std::cout<<"Global Position: "<<global_circles_vec_.circle_vec_[i].global_position_<<std::endl;
-        }
-    }
-
     prev_image_ = current_image_;
 }
 
@@ -105,5 +147,7 @@ void SingleRobotMapper::publishImagewithIDs(MultiAgentCircleMap::RosHandle& ros_
     ros_handle.ros_data_.image_.writeLandmarkID();
     ros_handle.pubDetectedCircles(current_image_.getImageWithDetectedCircles());
 }
+
+
 
 
