@@ -51,7 +51,6 @@ void SingleRobotMapper::updateMap(MultiAgentCircleMap::RosHandle ros_handle) {
 
         //assign new ID based for all the new landmarks.. //IMP: Also takes care of the adding new circles to the global_circles
         assignNewID();
-
     }
 
     this->publishImagewithIDs(ros_handle);

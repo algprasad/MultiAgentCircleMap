@@ -31,6 +31,7 @@ RosHandle::RosHandle(ros::NodeHandle& nodeHandle)
 
   serviceServer_ = nodeHandle_.advertiseService("future_addition",
                                                 &RosHandle::serviceCallback, this);
+  ros_data_.resetBools();
   ROS_INFO("Successfully launched node.");
 }
 
@@ -76,7 +77,7 @@ void RosHandle::imageCallback(const sensor_msgs::Image &message) {
     //Make the image object and assign the robot pose to the image object
     Image image(message, ros_data_.robot_pose_); //
     //Image image(message);
-    if(image.size_ > 0) ros_data_.setImage(image); //to make sure that when the circles are not there unnecessary calculations are not done
+    if(image.circle_vec_.circle_vec_.size() > 0) ros_data_.setImage(image); //to make sure that when the circles are not there unnecessary calculations are not done
 
 }
 
