@@ -22,7 +22,7 @@ void Image::detectCircles() {
     this->circle_vec_ = circle_vec;
     this->size_ = circles.size();
     cv_image_detected_circles_ = cv_image_; //so that the image_detected_circles has the circles highlighted
-    //if(!used_pixels_) assignPositionCoordinates2Circles();
+    if(!used_pixels_) assignPositionCoordinates2Circles();
 
 
 
@@ -77,6 +77,7 @@ void Image::assignPositionCoordinates2Circles() {
                 0, 0, 0, 1;
 
         wHr = wHr0*r0Hr;
+        //std::cout<<"Robot pose: \n"<< wHr<<std::endl;
         double z = wHr(2,3);
         Eigen::Vector3d cTp; //position of pixel coordinate in the frame of camera
         Eigen::Vector3d pixel_coordinates;
@@ -90,13 +91,19 @@ void Image::assignPositionCoordinates2Circles() {
                 0, 1, 0, cTp[1],
                 0, 0, 1, cTp[2],
                 0, 0, 0, 1;
+        //std::cout<<"Pixel in camera coordinates: \n"<<cTp;
 
         //need the camera in robot frame
-        Eigen::Matrix4d rHc; //camera pointing downwards
-        rHc << 0, 0, 1, 0.2,
+        Eigen::Matrix4d rHc0, c0Hc, rHc; //camera pointing downwards
+        rHc0 << 0, 0, 1, 0.2,
                 0, 1, 0, 0,
                 -1, 0, 0, 0.03,
                 0, 0, 0, 1;
+        c0Hc << 0, 0, 1, 0,
+                -1, 0, 0, 0,
+                0, -1, 0, 0,
+                0, 0, 0, 1;
+        rHc = rHc0*c0Hc;
 
         //coordinates of the centre in global frame
         Eigen::Matrix4d wHp;
@@ -104,6 +111,8 @@ void Image::assignPositionCoordinates2Circles() {
         Eigen::Vector3d wTp;
         wTp << wHp(0, 3), wHp(1,3), wHp(2,3);
         this->circle_vec_.circle_vec_[i].global_position_ = wTp;
+        //std::cout<<"\nThe wTp is \n  "<<wTp<<std::endl;
+        //std::cout<<"Z: "<<z<<std::endl;
 
     }
 
