@@ -18,11 +18,17 @@ namespace MultiAgentCircleMap {
 class RosHandle
 {
  public:
+  /**
+   * Robot index to identify which robot is being referenced
+   * */
+   int robot_index_;
+
+
   /*!
    * Constructor.
    * @param nodeHandle the ROS node handle.
    */
-  RosHandle(ros::NodeHandle& nodeHandle);
+  RosHandle(ros::NodeHandle& nodeHandle, int robot_index);
 
 
   /*!

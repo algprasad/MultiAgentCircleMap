@@ -80,34 +80,42 @@ include_directories(
 #target_compile_features(${PROJECT_NAME}_core INTERFACE cxx_std_14)
 
 ## Declare cpp executables
-add_executable(${PROJECT_NAME}
-  src/${PROJECT_NAME}_node.cpp
+## Executable 1: Iris0
+set(IRIS0 ${PROJECT_NAME}_iris0)
+set(IRIS1 ${PROJECT_NAME}_iris1)
+set(IRIS2 ${PROJECT_NAME}_iris2) ## TODO: do the following three steps for all the drones
+
+add_executable(${IRIS0}
+  src/${PROJECT_NAME}_node_iris0.cpp
         src/RosHandle.cpp
         src/Image.cpp include/MultiAgentCircleMap/Image.h src/Circle.cpp include/MultiAgentCircleMap/Circle.h src/CircleVec.cpp include/MultiAgentCircleMap/CircleVec.h src/Graph.cpp include/MultiAgentCircleMap/Graph.h src/SingleRobotMapper.cpp include/MultiAgentCircleMap/SingleRobotMapper.h src/MultiRobotMapper.cpp include/MultiAgentCircleMap/MultiRobotMapper.h src/Hungarian.cpp include/MultiAgentCircleMap/Hungarian.h)
-#target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_14)
 
-## Add dependencies to exported targets, like ROS msgs or srvs
-#add_dependencies(${PROJECT_NAME}_core
-#  ${catkin_EXPORTED_TARGETS}
-#)
-
-add_dependencies(${PROJECT_NAME}
+add_dependencies(${IRIS0}
   ${catkin_EXPORTED_TARGETS}
 )
 
-## Specify libraries to link executable targets against
-#target_link_libraries(${PROJECT_NAME}_core
-#  ${catkin_LIBRARIES} ${OpenCV_LIBS}
-#        yaml-cpp 
-        # gtsam aruco
-#)
-
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${IRIS0}
 #  ${PROJECT_NAME}_core
   ${catkin_LIBRARIES} ${OpenCV_LIBS}
         yaml-cpp 
 	#aruco gtsam
 )
+
+add_executable(${IRIS1}
+		src/${PROJECT_NAME}_node_iris1.cpp
+		src/RosHandle.cpp
+		src/Image.cpp include/MultiAgentCircleMap/Image.h src/Circle.cpp include/MultiAgentCircleMap/Circle.h src/CircleVec.cpp include/MultiAgentCircleMap/CircleVec.h src/Graph.cpp include/MultiAgentCircleMap/Graph.h src/SingleRobotMapper.cpp include/MultiAgentCircleMap/SingleRobotMapper.h src/MultiRobotMapper.cpp include/MultiAgentCircleMap/MultiRobotMapper.h src/Hungarian.cpp include/MultiAgentCircleMap/Hungarian.h)
+
+add_dependencies(${IRIS1}
+		${catkin_EXPORTED_TARGETS}
+		)
+
+target_link_libraries(${IRIS1}
+		#  ${PROJECT_NAME}_core
+		${catkin_LIBRARIES} ${OpenCV_LIBS}
+		yaml-cpp
+		#aruco gtsam
+		)
 
 #############
 ## Install ##
@@ -123,7 +131,7 @@ target_link_libraries(${PROJECT_NAME}
 
 # Mark cpp header files for installation
 install(
-  DIRECTORY include/${PROJECT_NAME}/
+  DIRECTORY include/${IRIS0}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
   FILES_MATCHING PATTERN "*.hpp"
 )
@@ -141,7 +149,7 @@ install(
 if(${CATKIN_ENABLE_TESTING})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 ## Add gtest based cpp test target and link libraries
-catkin_add_gtest(${PROJECT_NAME}-test
+catkin_add_gtest(${IRIS0}-test
         test/test_MultiAgentCircleMap.cpp
 	)
 

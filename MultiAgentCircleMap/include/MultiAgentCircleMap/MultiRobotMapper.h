@@ -8,6 +8,13 @@
 
 class MultiRobotMapper {
 
+
+public:
+    //default constructor
+    MultiRobotMapper();
+
+    void updateMap();
+
 };
 
 

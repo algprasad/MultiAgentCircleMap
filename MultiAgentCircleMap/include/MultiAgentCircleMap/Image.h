@@ -20,6 +20,7 @@ public:
 
     CircleVec circle_vec_;  //vector of circles associated with the image
     bool used_pixels_;  //bool to determine if pixel coordinates or position coordinates will used for data association
+    int robot_index_;
 
 public:
     unsigned int size_; //size of circle_vec
@@ -56,7 +57,12 @@ public:
     }
 
     /** Constructor to construct image with sensor_msgs::Image and also the robot_pose*/
-    Image(sensor_msgs::Image msg, geometry_msgs::PoseStamped robot_pose, bool used_pixels): robot_pose_(robot_pose), used_pixels_(used_pixels){
+    Image(sensor_msgs::Image msg,
+            geometry_msgs::PoseStamped robot_pose,
+            bool used_pixels, int robot_index):
+            robot_pose_(robot_pose),
+            used_pixels_(used_pixels),
+            robot_index_(robot_index){
         cv_bridge::CvImagePtr cv_ptr;
         try
         {

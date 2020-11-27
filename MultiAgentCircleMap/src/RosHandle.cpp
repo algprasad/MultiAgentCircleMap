@@ -10,8 +10,8 @@
 
 namespace MultiAgentCircleMap {
 
-RosHandle::RosHandle(ros::NodeHandle& nodeHandle)
-    : nodeHandle_(nodeHandle), rate_(20) //assigning temporary value which will be overwritten by the rosparam
+RosHandle::RosHandle(ros::NodeHandle& nodeHandle, int robot_index)
+    : nodeHandle_(nodeHandle), rate_(20), robot_index_(robot_index) //assigning temporary value which will be overwritten by the rosparam
 {
   if (!readParametersYAML()) {
     ROS_ERROR("Could not read parameters.");
@@ -75,7 +75,7 @@ void RosHandle::imageCallback(const sensor_msgs::Image &message) {
     ros_data_.setROSImage(message);
     ros_data_.setBoolNewImage(true);
     //Make the image object and assign the robot pose to the image object
-    Image image(message, ros_data_.robot_pose_, false);
+    Image image(message, ros_data_.robot_pose_, false, robot_index_);
     if(image.circle_vec_.circle_vec_.size() > 0) ros_data_.setImage(image); //to make sure that when the circles are not there unnecessary calculations are not done
 
 }
@@ -86,8 +86,8 @@ void RosHandle::pubDetectedCircles(cv::Mat img) {
 }
 
 bool RosHandle::readParametersYAML() {
-
-    YAML::Node config = YAML::LoadFile("/home/alg/RoverLocalization/rover_localization_ws/src/MultiAgentCircleMap/MultiAgentCircleMap/config/default.yaml");
+    std::string filename = "/home/alg/RoverLocalization/rover_localization_ws/src/MultiAgentCircleMap/MultiAgentCircleMap/config/constants_iris" + std::to_string(robot_index_) + ".yaml";
+    YAML::Node config = YAML::LoadFile(filename);
     ros_rate_hz_ = config["ros_rate"].as<double_t >();
     imu_subscriber_topic_ = config["sub_imu_topic"].as<std::string>();
     image_subscriber_topic_ = config["sub_image_topic"].as<std::string>();
