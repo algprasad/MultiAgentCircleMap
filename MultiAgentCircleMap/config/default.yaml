@@ -1,8 +1,6 @@
-ros_rate: 20
-sub_imu_topic: /mavros/imu/data
-robot_pose_topic: /mavros/local_position/pose
-sub_image_topic: /stereo/left/image_rect
-pub_detected_circles_image: /detected_circles
 
 #constants for the Hungarian Algo
 threshold_pixel_distance: 100
+
+#NN distance Threshold
+nn_distance_threshold: 0.9

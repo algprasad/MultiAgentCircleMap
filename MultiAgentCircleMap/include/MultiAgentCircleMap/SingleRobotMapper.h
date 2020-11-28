@@ -35,10 +35,14 @@ public:
     void assignCorrepondingPrevId(std::vector<int>& assignment, std::vector<std::vector<double> > cost_matrix);
     void assignNewID();
     void updateMap(MultiAgentCircleMap::RosHandle ros_handle);
+    //overloading updateMap to use for map merging with other robots //TODO maybe unecessary as NNAssignment itself can do the job.Remove
+    void updateMap(CircleVec new_circle_vec);
     void publishImagewithIDs(MultiAgentCircleMap::RosHandle& ros_handle);
     void HungarianAssignment(MultiAgentCircleMap::RosHandle ros_handle);
     void NearestNeighbourAssignment();
+    void NearestNeighbourAssignment(CircleVec new_circle_vec);
     void assignGlobalID2CurrentVec(std::vector<int> assignment_vec);
+    void assignGlobalID2NewVec(std::vector<int> assignment_vec, CircleVec new_circle_vec);
 
     CircleVec getGlobalCircles(){
         return this->global_circles_vec_;

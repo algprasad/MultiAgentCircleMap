@@ -4,6 +4,8 @@
 
 #include "MultiAgentCircleMap/SingleRobotMapper.h"
 #include "MultiAgentCircleMap/Hungarian.h"
+#include "Utils.h"
+
 #define DEBUG 0
 
 /** Cost matrix based on Pixel distance */
@@ -67,7 +69,9 @@ void SingleRobotMapper::assignGlobalID2CurrentVec(std::vector<int> assignment_ve
 
 void SingleRobotMapper::NearestNeighbourAssignment() {
     //std::cout<<"Inside Nearest Neighbour";
-    double POSITION_DIST_THRESHOLD = 0.5;
+    std::string filename = "/home/alg/RoverLocalization/rover_localization_ws/src/MultiAgentCircleMap/MultiAgentCircleMap/config/default.yaml";
+    YAML::Node config = YAML::LoadFile(filename);
+    double POSITION_DIST_THRESHOLD = config["nn_distance_threshold"].as<double_t >();//0.5;// TODO get this from yaml config
     std::vector<int> assignment_vec(current_image_.circle_vec_.circle_vec_.size());
     for(int i =0; i< current_image_.circle_vec_.circle_vec_.size(); i++){
         double min_distance = INT64_MAX;
@@ -91,6 +95,38 @@ void SingleRobotMapper::NearestNeighbourAssignment() {
 }
 
 
+void SingleRobotMapper::NearestNeighbourAssignment(CircleVec new_circle_vec) {
+    //TODO(OFN): Put this in the constructor itself
+    //std::cout<<"Inside Nearest Neighbour";
+    std::string filename = "/home/alg/RoverLocalization/rover_localization_ws/src/MultiAgentCircleMap/MultiAgentCircleMap/config/default.yaml";
+    YAML::Node config = YAML::LoadFile(filename);
+    double POSITION_DIST_THRESHOLD = config["nn_distance_threshold"].as<double_t >();
+
+
+    std::vector<int> assignment_vec(new_circle_vec.circle_vec_.size());
+    for(int i =0; i< new_circle_vec.circle_vec_.size(); i++){
+        double min_distance = INT64_MAX;
+        double assignment = -1;
+        for(int j =0; j< global_circles_vec_.circle_vec_.size(); j++){
+            Eigen::Vector3d temp_diff_vec  = new_circle_vec.circle_vec_[i].global_position_  - global_circles_vec_.circle_vec_[j].global_position_;
+            double distance = temp_diff_vec.norm();
+            if(distance < min_distance && distance < POSITION_DIST_THRESHOLD) {
+                min_distance = distance;
+                assignment = j;
+            }
+        }
+        assignment_vec[i] = assignment;
+    }
+
+    //TODO function to remove one circle assigned to multiple global circles -- MAYBE NOT NECESSARY
+
+    //function to take assign IDs (global IDs for recurring landmarks and new IDs to new landmarks)
+    assignGlobalID2NewVec(assignment_vec, new_circle_vec);
+
+}
+
+
+
 void SingleRobotMapper::updateMap(MultiAgentCircleMap::RosHandle ros_handle) {
     current_image_ = ros_handle.ros_data_.image_;
     if(this->first_image_){
@@ -99,11 +135,17 @@ void SingleRobotMapper::updateMap(MultiAgentCircleMap::RosHandle ros_handle) {
     }
     else{
         if(current_image_.used_pixels_) HungarianAssignment(ros_handle);  //uses pixel coordinates
-        else NearestNeighbourAssignment();  //uses global position coordiantes of the circle centres
+        else NearestNeighbourAssignment();  //uses global position coordinates of the circle centres
     }
 
     this->publishImagewithIDs(ros_handle);
     prev_image_ = current_image_;
+}
+
+//overloading for merging maps with other robots
+void SingleRobotMapper::updateMap(CircleVec new_circle_vec) {
+    NearestNeighbourAssignment(new_circle_vec);
+
 }
 
 std::vector<int> SingleRobotMapper::getAssignment(std::vector<std::vector<double> > &cost_matrix) {
@@ -146,6 +188,26 @@ void SingleRobotMapper::publishImagewithIDs(MultiAgentCircleMap::RosHandle& ros_
     ros_handle.ros_data_.image_.circle_vec_ = current_image_.circle_vec_;
     ros_handle.ros_data_.image_.writeLandmarkID();
     ros_handle.pubDetectedCirclesImage(current_image_.getImageWithDetectedCircles());
+}
+
+//assigning new IDs to the other robots' circlevec
+void SingleRobotMapper::assignGlobalID2NewVec(std::vector<int> assignment_vec, CircleVec new_circle_vec) {
+
+    for(int i =0; i<new_circle_vec.circle_vec_.size(); i++){
+        if(assignment_vec[i] != -1){ //that means there is an assignment
+            //set the landmark ID equal to the ID of its global counter part //mostly for visualization purposes
+            new_circle_vec.circle_vec_[i].setIndex(global_circles_vec_.circle_vec_[assignment_vec[i]].index_);
+            new_circle_vec.circle_vec_[i].setBoolHasIndex(true);
+        }
+        else{ //i.e. if assignment_vec[i] == -1
+            //assign new ID
+            new_circle_vec.circle_vec_[i].index_ = global_circles_vec_.circle_vec_.size() + 1 ;
+            new_circle_vec.circle_vec_[i].setBoolHasIndex(true);
+            global_circles_vec_.circle_vec_.push_back(new_circle_vec.circle_vec_[i]);
+        }
+    }
+
+
 }
 
 

@@ -10,30 +10,43 @@
 
 namespace MultiAgentCircleMap {
 
-RosHandle::RosHandle(ros::NodeHandle& nodeHandle, int robot_index)
-    : nodeHandle_(nodeHandle), rate_(20), robot_index_(robot_index) //assigning temporary value which will be overwritten by the rosparam
+RosHandle::RosHandle(ros::NodeHandle& node_handle, int robot_index)
+    : node_handle_(node_handle), rate_(20), robot_index_(robot_index) //assigning temporary value which will be overwritten by the rosparam
 {
   if (!readParametersYAML()) {
     ROS_ERROR("Could not read parameters.");
     ros::requestShutdown();
   }
   rate_ = ros_rate_hz_;
-  imu_subscriber_ = nodeHandle_.subscribe(imu_subscriber_topic_, 1,
-                                          &RosHandle::imuCallback, this);
+  imu_subscriber_ = node_handle_.subscribe(imu_subscriber_topic_, 1,
+                                           &RosHandle::imuCallback, this);
 
-  image_subscriber_ = nodeHandle_.subscribe(image_subscriber_topic_, 1,
-                                            &RosHandle::imageCallback, this);
+  image_subscriber_ = node_handle_.subscribe(image_subscriber_topic_, 1,
+                                             &RosHandle::imageCallback, this);
 
-  odometry_subscriber_ = nodeHandle_.subscribe(robot_pose_subscriber_topic_, 1, &RosHandle::PoseCallback, this );
+  /** Subscribe to other robots' local maps*/
 
-  image_transport::ImageTransport it(nodeHandle_);
+  sub_global_circles_0_ = node_handle_.subscribe(global_circles_subscriber_topic_0_, 10,
+                                            &RosHandle::globalCircles0Callback, this);
+
+  sub_global_circles_1_ = node_handle_.subscribe(global_circles_subscriber_topic_1_, 10,
+                                                   &RosHandle::globalCircles1Callback, this);
+  sub_global_circles_2_ = node_handle_.subscribe(global_circles_subscriber_topic_2_, 10,
+                                                   &RosHandle::globalCircles2Callback, this);
+
+
+  odometry_subscriber_ = node_handle_.subscribe(robot_pose_subscriber_topic_, 1, &RosHandle::PoseCallback, this );
+
+  image_transport::ImageTransport it(node_handle_);
     pub_image_detected_circles_ = it.advertise(detected_circles_image_publisher_topic_, 1);
 
-  pub_global_circles_ = nodeHandle_.advertise<MultiAgentCircleMap::CircleArray>(global_circles_publisher_topic_, 10);
+  pub_global_circles_ = node_handle_.advertise<MultiAgentCircleMap::CircleArray>(global_circles_publisher_topic_, 10);
 
-  serviceServer_ = nodeHandle_.advertiseService("future_addition",
-                                                &RosHandle::serviceCallback, this);
+  serviceServer_ = node_handle_.advertiseService("future_addition",
+                                                 &RosHandle::serviceCallback, this);
   ros_data_.resetBools();
+
+
   ROS_INFO("Successfully launched node.");
 }
 
@@ -41,14 +54,15 @@ RosHandle::~RosHandle()
 {
 }
 
+//DEPRECATED Used readParametersYAML() instead
 bool RosHandle::readParameters()
 {
-  if (!nodeHandle_.getParam("ros_rate", ros_rate_hz_)) return false;
-  if (!nodeHandle_.getParam("sub_imu_topic", imu_subscriber_topic_)) return false;
-  if (!nodeHandle_.getParam("sub_image_topic", image_subscriber_topic_)) return false;
-  if (!nodeHandle_.getParam("robot_pose_topic", robot_pose_subscriber_topic_)) return false;
-  if (!nodeHandle_.getParam("pub_detected_circles_image", detected_circles_image_publisher_topic_)) return false;
-  if (!nodeHandle_.getParam("threshold_pixel_distance", threshold_pixel_distance_)) return false;
+  if (!node_handle_.getParam("ros_rate", ros_rate_hz_)) return false;
+  if (!node_handle_.getParam("sub_imu_topic", imu_subscriber_topic_)) return false;
+  if (!node_handle_.getParam("sub_image_topic", image_subscriber_topic_)) return false;
+  if (!node_handle_.getParam("robot_pose_topic", robot_pose_subscriber_topic_)) return false;
+  if (!node_handle_.getParam("pub_detected_circles_image", detected_circles_image_publisher_topic_)) return false;
+  if (!node_handle_.getParam("threshold_pixel_distance", threshold_pixel_distance_)) return false;
 
   return true;
 }
@@ -97,6 +111,10 @@ bool RosHandle::readParametersYAML() {
     detected_circles_image_publisher_topic_ = config["pub_detected_circles_image"].as<std::string>();
     threshold_pixel_distance_ = config["threshold_pixel_distance"].as<double_t >();
     global_circles_publisher_topic_ = config["global_circles_publisher_topic"].as<std::string>();
+    global_circles_subscriber_topic_0_ = config["sub_global_circles_0_topic"].as<std::string>();
+    global_circles_subscriber_topic_1_ = config["sub_global_circles_1_topic"].as<std::string>();
+    global_circles_subscriber_topic_2_ = config["sub_global_circles_2_topic"].as<std::string>();
+
 
     return true;  //FIXME the yaml should return boolean to check if the parameters were read and then readParametersYAML can use that.
 }
@@ -114,7 +132,30 @@ void RosHandle::pubGlobalDetectedCircles(CircleVec global_circle_vec) {
         circle_array.circle_vec.push_back(temp_circle_msg);
     }
 
+    //broadcast the position of the robot too to check the distance
+    circle_array.robot_x = ros_data_.robot_pose_.pose.position.x;
+    circle_array.robot_y = ros_data_.robot_pose_.pose.position.y;
+    circle_array.robot_z = ros_data_.robot_pose_.pose.position.z;
+
+
     pub_global_circles_.publish(circle_array);
+}
+//FIXME confirm if you can use the same callback function for all the three
+void RosHandle::globalCircles0Callback(const MultiAgentCircleMap::CircleArray& msg) {
+    ros_data_.global_circle0_array_ = msg;
+    ros_data_.new_global_circle0_ = true;
+}
+
+void RosHandle::globalCircles1Callback(const MultiAgentCircleMap::CircleArray& msg) {
+    ros_data_.global_circle1_array_ = msg;
+    ros_data_.new_global_circle1_ = true;
+
+}
+
+void RosHandle::globalCircles2Callback(const MultiAgentCircleMap::CircleArray& msg) {
+
+    ros_data_.global_circle2_array_ = msg;
+    ros_data_.new_global_circle2_ = true;
 }
 
 

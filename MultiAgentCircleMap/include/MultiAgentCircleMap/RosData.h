@@ -6,6 +6,7 @@
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/Image.h>
 #include "Image.h"
+#include "../../../../../devel/include/MultiAgentCircleMap/CircleArray.h"
 //#include "ArUcoMarker.h"
 
 namespace MultiAgentCircleMap{
@@ -22,12 +23,20 @@ public:
     sensor_msgs::Image ros_image_;
     geometry_msgs::PoseStamped robot_pose_;
     Image image_;
+    MultiAgentCircleMap::CircleArray global_circle0_array_; //global circles from other robots
+    MultiAgentCircleMap::CircleArray global_circle1_array_; //global circles from other robots
+    MultiAgentCircleMap::CircleArray global_circle2_array_; //global circles from other robots
 
     /** Bools to make sure new data is used*/
     bool new_angular_velocity_;
     bool new_linear_velocity_;
     bool new_image_;
     bool new_robot_pose_;
+    bool new_global_circle0_;
+    bool new_global_circle1_;
+    bool new_global_circle2_;
+
+
 
     //ArUco Marker
     //ArUcoMarker aruco_marker_;  //aruco marker in the current image obtained from ros
@@ -58,6 +67,10 @@ public:
         this->new_angular_velocity_ = false;
         this->new_linear_velocity_ = false;
         this->new_image_ = false;
+        this->new_robot_pose_ = false;
+        this->new_global_circle0_ = false;
+        this->new_global_circle1_ = false;
+        this->new_global_circle2_ = false;
     }
 
     void setBoolNewAngularVelocity(bool is_new_angular_velocity){

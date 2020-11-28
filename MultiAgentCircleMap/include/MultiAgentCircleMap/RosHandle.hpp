@@ -22,12 +22,16 @@ class RosHandle
 {
 private:
     //! ROS node handle.
-    ros::NodeHandle& nodeHandle_;
+    ros::NodeHandle& node_handle_;
 
     //! ROS topic subscriber.
     ros::Subscriber imu_subscriber_;
     ros::Subscriber odometry_subscriber_;
     ros::Subscriber image_subscriber_;
+    ros::Subscriber sub_global_circles_0_;
+    ros::Subscriber sub_global_circles_1_;
+    ros::Subscriber sub_global_circles_2_;
+
 
     //! ROS Publisher
     image_transport::Publisher pub_image_detected_circles_ ;
@@ -39,6 +43,10 @@ private:
     std::string imu_subscriber_topic_;
     std::string robot_pose_subscriber_topic_;
     std::string image_subscriber_topic_;
+    std::string global_circles_subscriber_topic_0_;
+    std::string global_circles_subscriber_topic_1_;
+    std::string global_circles_subscriber_topic_2_;
+
 
     //! ROS topic names to publish to
     std::string detected_circles_image_publisher_topic_;
@@ -67,9 +75,9 @@ public:
 
    /*!
     * Constructor.
-    * @param nodeHandle the ROS node handle.
+    * @param node_handle the ROS node handle.
     */
-   RosHandle(ros::NodeHandle& nodeHandle, int robot_index);
+   RosHandle(ros::NodeHandle& node_handle, int robot_index);
 
 
     /*!
@@ -118,6 +126,11 @@ private:
    * @param odometry message given by optical flow
    */
   void PoseCallback(const geometry_msgs::PoseStamped& message);
+  void globalCircles0Callback(const MultiAgentCircleMap::CircleArray& msg);
+  void globalCircles1Callback(const MultiAgentCircleMap::CircleArray& msg);
+  void globalCircles2Callback(const MultiAgentCircleMap::CircleArray& msg);
+
+
 
 
     /*!
@@ -128,6 +141,10 @@ private:
      */
   bool serviceCallback(std_srvs::Trigger::Request& request,
                        std_srvs::Trigger::Response& response);
+
+
+
+
 
 
 
