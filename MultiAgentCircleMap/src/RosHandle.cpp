@@ -27,7 +27,9 @@ RosHandle::RosHandle(ros::NodeHandle& nodeHandle, int robot_index)
   odometry_subscriber_ = nodeHandle_.subscribe(robot_pose_subscriber_topic_, 1, &RosHandle::PoseCallback, this );
 
   image_transport::ImageTransport it(nodeHandle_);
-  pub_detected_circles_ = it.advertise(detected_circles_publisher_topic_, 1);
+    pub_image_detected_circles_ = it.advertise(detected_circles_image_publisher_topic_, 1);
+
+  pub_global_circles_ = nodeHandle_.advertise<MultiAgentCircleMap::CircleArray>(global_circles_publisher_topic_, 10);
 
   serviceServer_ = nodeHandle_.advertiseService("future_addition",
                                                 &RosHandle::serviceCallback, this);
@@ -45,7 +47,7 @@ bool RosHandle::readParameters()
   if (!nodeHandle_.getParam("sub_imu_topic", imu_subscriber_topic_)) return false;
   if (!nodeHandle_.getParam("sub_image_topic", image_subscriber_topic_)) return false;
   if (!nodeHandle_.getParam("robot_pose_topic", robot_pose_subscriber_topic_)) return false;
-  if (!nodeHandle_.getParam("pub_detected_circles_image", detected_circles_publisher_topic_)) return false;
+  if (!nodeHandle_.getParam("pub_detected_circles_image", detected_circles_image_publisher_topic_)) return false;
   if (!nodeHandle_.getParam("threshold_pixel_distance", threshold_pixel_distance_)) return false;
 
   return true;
@@ -80,9 +82,9 @@ void RosHandle::imageCallback(const sensor_msgs::Image &message) {
 
 }
 
-void RosHandle::pubDetectedCircles(cv::Mat img) {
+void RosHandle::pubDetectedCirclesImage(cv::Mat img) {
     sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img).toImageMsg();
-    pub_detected_circles_.publish(msg);
+    pub_image_detected_circles_.publish(msg);
 }
 
 bool RosHandle::readParametersYAML() {
@@ -92,10 +94,27 @@ bool RosHandle::readParametersYAML() {
     imu_subscriber_topic_ = config["sub_imu_topic"].as<std::string>();
     image_subscriber_topic_ = config["sub_image_topic"].as<std::string>();
     robot_pose_subscriber_topic_ = config["robot_pose_topic"].as<std::string>();
-    detected_circles_publisher_topic_ = config["pub_detected_circles_image"].as<std::string>();
+    detected_circles_image_publisher_topic_ = config["pub_detected_circles_image"].as<std::string>();
     threshold_pixel_distance_ = config["threshold_pixel_distance"].as<double_t >();
+    global_circles_publisher_topic_ = config["global_circles_publisher_topic"].as<std::string>();
 
     return true;  //FIXME the yaml should return boolean to check if the parameters were read and then readParametersYAML can use that.
+}
+
+void RosHandle::pubGlobalDetectedCircles(CircleVec global_circle_vec) {
+    MultiAgentCircleMap::CircleArray circle_array;
+    for(int i =0; i< global_circle_vec.circle_vec_.size(); i++){
+        MultiAgentCircleMap::CircleMsg temp_circle_msg;
+        temp_circle_msg.centre_x = global_circle_vec.circle_vec_[i].global_position_[0];
+        temp_circle_msg.centre_y = global_circle_vec.circle_vec_[i].global_position_[1];
+        temp_circle_msg.centre_z = global_circle_vec.circle_vec_[i].global_position_[2];
+        temp_circle_msg.radius = global_circle_vec.circle_vec_[i].radius_;
+        temp_circle_msg.index = global_circle_vec.circle_vec_[i].index_;
+
+        circle_array.circle_vec.push_back(temp_circle_msg);
+    }
+
+    pub_global_circles_.publish(circle_array);
 }
 
 

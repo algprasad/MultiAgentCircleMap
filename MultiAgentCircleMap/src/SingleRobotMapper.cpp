@@ -145,7 +145,7 @@ void SingleRobotMapper::assignNewID() {
 void SingleRobotMapper::publishImagewithIDs(MultiAgentCircleMap::RosHandle& ros_handle) {
     ros_handle.ros_data_.image_.circle_vec_ = current_image_.circle_vec_;
     ros_handle.ros_data_.image_.writeLandmarkID();
-    ros_handle.pubDetectedCircles(current_image_.getImageWithDetectedCircles());
+    ros_handle.pubDetectedCirclesImage(current_image_.getImageWithDetectedCircles());
 }
 
 

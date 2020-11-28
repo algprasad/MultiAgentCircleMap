@@ -9,6 +9,9 @@
 #include <std_srvs/Trigger.h>
 #include <geometry_msgs/PoseStamped.h>
 #include "RosData.h"
+#include "../../../../devel/include/MultiAgentCircleMap/CircleMsg.h"
+#include "../../../../devel/include/MultiAgentCircleMap/CircleArray.h"
+
 
 namespace MultiAgentCircleMap {
 
@@ -17,24 +20,39 @@ namespace MultiAgentCircleMap {
  */
 class RosHandle
 {
- public:
-  /**
-   * Robot index to identify which robot is being referenced
-   * */
-   int robot_index_;
+private:
+    //! ROS node handle.
+    ros::NodeHandle& nodeHandle_;
+
+    //! ROS topic subscriber.
+    ros::Subscriber imu_subscriber_;
+    ros::Subscriber odometry_subscriber_;
+    ros::Subscriber image_subscriber_;
+
+    //! ROS Publisher
+    image_transport::Publisher pub_image_detected_circles_ ;
+    ros::Publisher pub_global_circles_;
 
 
-  /*!
-   * Constructor.
-   * @param nodeHandle the ROS node handle.
-   */
-  RosHandle(ros::NodeHandle& nodeHandle, int robot_index);
+
+    //! ROS topic name to subscribe to.
+    std::string imu_subscriber_topic_;
+    std::string robot_pose_subscriber_topic_;
+    std::string image_subscriber_topic_;
+
+    //! ROS topic names to publish to
+    std::string detected_circles_image_publisher_topic_;
+    std::string global_circles_publisher_topic_;
 
 
-  /*!
-   * Destructor.
-   */
-  virtual ~RosHandle();
+    //! ROS service server.
+    ros::ServiceServer serviceServer_;
+
+public:
+    /**
+    * Robot index to identify which robot is being referenced
+    * */
+    int robot_index_;
 
     //ROSData object to which the values are passed
     RosData ros_data_;
@@ -46,7 +64,27 @@ class RosHandle
     //Hungarian Algo based constants
     double threshold_pixel_distance_;
 
-    void pubDetectedCircles(cv::Mat img);
+
+   /*!
+    * Constructor.
+    * @param nodeHandle the ROS node handle.
+    */
+   RosHandle(ros::NodeHandle& nodeHandle, int robot_index);
+
+
+    /*!
+     * Destructor.
+     */
+    virtual ~RosHandle();
+
+
+
+    void pubDetectedCirclesImage(cv::Mat img);
+
+    //function to publish circles for others to see and merge
+    void pubGlobalDetectedCircles(CircleVec global_circle_vec);
+
+
 
 private:
 
@@ -91,28 +129,6 @@ private:
   bool serviceCallback(std_srvs::Trigger::Request& request,
                        std_srvs::Trigger::Response& response);
 
-  //! ROS node handle.
-  ros::NodeHandle& nodeHandle_;
-
-  //! ROS topic subscriber.
-  ros::Subscriber imu_subscriber_;
-  ros::Subscriber odometry_subscriber_;
-  ros::Subscriber image_subscriber_;
-
-  //! ROS Publisher
-  image_transport::Publisher pub_detected_circles_ ;
-
-
-  //! ROS topic name to subscribe to.
-  std::string imu_subscriber_topic_;
-  std::string robot_pose_subscriber_topic_;
-  std::string image_subscriber_topic_;
-
-  //! ROS topic names to publish to
-  std::string detected_circles_publisher_topic_;
-
-  //! ROS service server.
-  ros::ServiceServer serviceServer_;
 
 
 };

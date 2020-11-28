@@ -40,6 +40,10 @@ public:
     void NearestNeighbourAssignment();
     void assignGlobalID2CurrentVec(std::vector<int> assignment_vec);
 
+    CircleVec getGlobalCircles(){
+        return this->global_circles_vec_;
+    };
+
 
 };
 

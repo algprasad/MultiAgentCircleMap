@@ -18,12 +18,24 @@ find_package(catkin REQUIRED
   COMPONENTS
     roscpp
     sensor_msgs
-    roslint image_transport cv_bridge sensor_msgs
+    roslint image_transport cv_bridge sensor_msgs message_generation
 )
 #find_package(Eigen REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED)
 find_package(yaml-cpp REQUIRED)
+
+
+add_message_files(
+		FILES
+		CircleMsg.msg
+		CircleArray.msg
+)
+
+generate_messages(
+		DEPENDENCIES
+		std_msgs  # Or other packages containing msgs
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -51,6 +63,9 @@ catkin_package(
   ## Dependees do not depend on Boost when they depend on this package.
 )
 
+
+
+
 ###########
 ## Build ##
 ###########
@@ -61,16 +76,25 @@ set(AUX_SRC_FILES include/MultiAgentCircleMap/RosData.h
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-
-
+message("CMake include dires")
+message("${CMAKE_CURRENT_BINARY_DIR}")
 include_directories(
   include
+		#dont need this for catkin build only for CLion . #TODO(OFN): Find a way around this
+  /home/alg/RoverLocalization/rover_localization_ws/devel/.private/MultiAgentCircleMap/include
   ${catkin_INCLUDE_DIRS}
   # Set manually because Eigen sets a non standard INCLUDE DIR
         #${GTSAM_EIGEN_INCLUDE_DIRS}
   # Set because Boost is an internal dependency, not transitive.
   ${Boost_INCLUDE_DIRS} #${GTSAM_INCLUDE_DIR}
 )
+message("CMake include dires")
+message("${INCLUDE_DIRECTORIES}")
+get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+foreach(dir ${dirs})
+	message(STATUS "dir='${dir}'")
+endforeach()
+
 
 #link_directories("${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/aruco3.1.6/build/src")
 ## Declare a cpp library #TODO: Maybe remove the AUX_SRC_FILES from here
@@ -88,7 +112,7 @@ set(IRIS2 ${PROJECT_NAME}_iris2) ## TODO: do the following three steps for all t
 add_executable(${IRIS0}
   src/${PROJECT_NAME}_node_iris0.cpp
         src/RosHandle.cpp
-        src/Image.cpp include/MultiAgentCircleMap/Image.h src/Circle.cpp include/MultiAgentCircleMap/Circle.h src/CircleVec.cpp include/MultiAgentCircleMap/CircleVec.h src/Graph.cpp include/MultiAgentCircleMap/Graph.h src/SingleRobotMapper.cpp include/MultiAgentCircleMap/SingleRobotMapper.h src/MultiRobotMapper.cpp include/MultiAgentCircleMap/MultiRobotMapper.h src/Hungarian.cpp include/MultiAgentCircleMap/Hungarian.h)
+        src/Image.cpp include/MultiAgentCircleMap/Image.h src/Circle.cpp include/MultiAgentCircleMap/Circle.h src/CircleVec.cpp include/MultiAgentCircleMap/CircleVec.h src/Graph.cpp include/MultiAgentCircleMap/Graph.h src/SingleRobotMapper.cpp include/MultiAgentCircleMap/SingleRobotMapper.h src/MultiRobotMapper.cpp include/MultiAgentCircleMap/MultiRobotMapper.h src/Hungarian.cpp include/MultiAgentCircleMap/Hungarian.h src/Utils.h src/Visualization.cpp include/MultiAgentCircleMap/Visualization.h)
 
 add_dependencies(${IRIS0}
   ${catkin_EXPORTED_TARGETS}
@@ -104,7 +128,7 @@ target_link_libraries(${IRIS0}
 add_executable(${IRIS1}
 		src/${PROJECT_NAME}_node_iris1.cpp
 		src/RosHandle.cpp
-		src/Image.cpp include/MultiAgentCircleMap/Image.h src/Circle.cpp include/MultiAgentCircleMap/Circle.h src/CircleVec.cpp include/MultiAgentCircleMap/CircleVec.h src/Graph.cpp include/MultiAgentCircleMap/Graph.h src/SingleRobotMapper.cpp include/MultiAgentCircleMap/SingleRobotMapper.h src/MultiRobotMapper.cpp include/MultiAgentCircleMap/MultiRobotMapper.h src/Hungarian.cpp include/MultiAgentCircleMap/Hungarian.h)
+		src/Image.cpp include/MultiAgentCircleMap/Image.h src/Circle.cpp include/MultiAgentCircleMap/Circle.h src/CircleVec.cpp include/MultiAgentCircleMap/CircleVec.h src/Graph.cpp include/MultiAgentCircleMap/Graph.h src/SingleRobotMapper.cpp include/MultiAgentCircleMap/SingleRobotMapper.h src/MultiRobotMapper.cpp include/MultiAgentCircleMap/MultiRobotMapper.h src/Hungarian.cpp include/MultiAgentCircleMap/Hungarian.h src/Visualization.cpp include/MultiAgentCircleMap/Visualization.h)
 
 add_dependencies(${IRIS1}
 		${catkin_EXPORTED_TARGETS}

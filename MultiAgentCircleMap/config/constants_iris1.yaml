@@ -2,17 +2,29 @@ ros_rate: 20
 sub_imu_topic: /mavros/imu/data
 robot_pose_topic: /uav1/mavros/local_position/pose
 sub_image_topic: /iris_1/camera_iris/image_raw
-pub_detected_circles_image: iris1/detected_circles
+pub_detected_circles_image: iris1/detected_circles_image
+global_circles_publisher_topic: iris1/detected_circles
 
 #constants for the Hungarian Algo
 threshold_pixel_distance: 100
 
 #initial position of the drone
 initial_x: 0
-initial_y: -9
+initial_y: 20
 initial_z: 0
 
 #camera matrix
 k_matrix: [[476.7030836014194, 0.0, 400.5],
            [0.0, 476.7030836014194, 400.5],
            [0.0, 0.0, 1.0]]
+
+rHc0: [[0, 0, 1, 0],
+        [0, 1, 0, 0],
+        [-1, 0, 0, -0.07],
+        [0, 0, 0, 1]]
+
+#optical axis
+c0Hc: [[0, 0, 1, 0],
+        [-1, 0, 0, 0],
+        [0, -1, 0, 0],
+        [0, 0, 0, 1]]

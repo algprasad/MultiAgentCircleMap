@@ -13,6 +13,9 @@
   <buildtool_depend>catkin</buildtool_depend>
   <!-- build_depend: dependencies only used in source files -->
   <build_depend>boost</build_depend>
+  <build_depend>message_generation</build_depend>
+  <build_export_depend>message_generation</build_export_depend>
+  <exec_depend>message_runtime</exec_depend>
   <!-- depend: build, export, and execution dependency -->
   <depend>eigen</depend>
   <depend>roscpp</depend>

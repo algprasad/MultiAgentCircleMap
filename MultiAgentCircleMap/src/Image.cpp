@@ -7,9 +7,12 @@
 #include <yaml-cpp/yaml.h>
 #include "MultiAgentCircleMap/Image.h"
 #include "opencv2/imgproc.hpp"
+//#include "Utils.h"
 
 
 void Image::detectCircles() {
+
+    //TODO get the constants of the functions from YAML
 
     cv::Mat gray;
     cv::cvtColor(cv_image_, gray, cv::COLOR_BGR2GRAY);
@@ -17,7 +20,7 @@ void Image::detectCircles() {
     std::vector<cv::Vec3f> circles;
     cv::HoughCircles(gray, circles, cv::HOUGH_GRADIENT, 1,
                      gray.rows/16,  // change this value to detect circles with different distances to each other
-                     100, 30, 1, 100 // change the last two parameters
+                     100, 30, 1, 400 // change the last two parameters
             // (min_radius & max_radius) to detect larger circles
     );
     CircleVec circle_vec(circles);
@@ -25,7 +28,6 @@ void Image::detectCircles() {
     this->size_ = circles.size();
     cv_image_detected_circles_ = cv_image_; //so that the image_detected_circles has the circles highlighted
     if(!used_pixels_) assignPositionCoordinates2Circles();
-
 
 
 }
@@ -43,9 +45,17 @@ unsigned int Image::getSize() {
     return circle_vec_.circle_vec_.size();
 
 }
-void vec2eigenmat(std::vector<std::vector<double> > vec,  Eigen::Matrix3d& mat){
-    for(int i =0; i< 3; i++){
-        for(int j =0; j< 3; j++)
+
+void vec2eigenmat3d(std::vector<std::vector<double> > vec, Eigen::Matrix3d& mat){
+    for(int i =0; i< vec.size(); i++){
+        for(int j =0; j< vec[i].size(); j++)
+            mat(i,j) = vec[i][j];
+    }
+}
+
+void vec2eigenmat4d(std::vector<std::vector<double> > vec, Eigen::Matrix4d& mat){
+    for(int i =0; i< vec.size(); i++){
+        for(int j =0; j< vec[i].size(); j++)
             mat(i,j) = vec[i][j];
     }
 }
@@ -61,7 +71,7 @@ void Image::assignPositionCoordinates2Circles() {
 
     Eigen::Matrix3d K_MATRIX;
     std::vector<std::vector<double> > k_matrix_vec = config["k_matrix"].as<std::vector<std::vector<double>> >();
-    vec2eigenmat(k_matrix_vec, K_MATRIX);
+    vec2eigenmat3d(k_matrix_vec, K_MATRIX);
 
     /*K_MATRIX << 238.35, 0, 200.5,
                 0, 238.35, 200.5,
@@ -113,14 +123,11 @@ void Image::assignPositionCoordinates2Circles() {
 
         //need the camera in robot frame
         Eigen::Matrix4d rHc0, c0Hc, rHc; //camera pointing downwards
-        rHc0 << 0, 0, 1, 0.2, //TODO: These are also constant values that you should get from yaml
-                0, 1, 0, 0,
-                -1, 0, 0, 0.03,
-                0, 0, 0, 1;
-        c0Hc << 0, 0, 1, 0,
-                -1, 0, 0, 0,
-                0, -1, 0, 0,
-                0, 0, 0, 1;
+        std::vector<std::vector<double> > rHc0_vec = config["rHc0"].as<std::vector<std::vector<double>> >();
+        vec2eigenmat4d(rHc0_vec, rHc0);
+
+        std::vector<std::vector<double> > c0Hc_vec = config["c0Hc"].as<std::vector<std::vector<double>> >();
+        vec2eigenmat4d(c0Hc_vec, c0Hc);
         rHc = rHc0*c0Hc;
 
         //coordinates of the centre in global frame
