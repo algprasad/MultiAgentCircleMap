@@ -7,6 +7,7 @@
 #include "MultiAgentCircleMap/MultiRobotMapper.h"
 #include "Utils.h"
 const int robot_index = 0; //Change this for the subsequent robots (i.e. #1,  #2)
+const int NUM_ROBOTS = 3;
 
 int main(int argc, char** argv)
 {
@@ -18,15 +19,15 @@ int main(int argc, char** argv)
     SingleRobotMapper single_robot_mapper;  //ros_handle_ has all the latest information from ros in ros_data_ and gets updated every cycle
 
     //combine maps from other robots
-    //MultiRobotMapper multi_robot_mapper;
+    MultiRobotMapper multi_robot_mapper(robot_index);
     while(ros::ok()){
 
         if(ros_handle.ros_data_.isNewImage() && ros_handle.ros_data_.isNewRobotPose()) single_robot_mapper.updateMap(ros_handle);
         //publish the circles
+        ros_handle.pubGlobalDetectedCircles(single_robot_mapper.getGlobalCircles());
 
-
-
-        //if any of the robots are nearby, update map multi_robot_mapper
+        //TODO: change this for every robot node
+        if(ros_handle.ros_data_.new_global_circle1_ || ros_handle.ros_data_.new_global_circle2_) multi_robot_mapper.updateMap(ros_handle, single_robot_mapper);
 
 
         ros_handle.ros_data_.resetBools();
@@ -34,8 +35,6 @@ int main(int argc, char** argv)
         // Display all the detections with their indices on an image plane with cv::window
         Visualization visualizer(single_robot_mapper.getGlobalCircles(), ros_handle.robot_index_);
         visualizer.showLandmarksOnFullImage();
-        ros_handle.pubGlobalDetectedCircles(single_robot_mapper.getGlobalCircles());
-
 
         ros::spinOnce();
         ros_handle.rate_.sleep();
@@ -44,4 +43,3 @@ int main(int argc, char** argv)
 
     return 0;
 }
-

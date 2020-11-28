@@ -71,6 +71,7 @@ public:
     //Other constants
     //Hungarian Algo based constants
     double threshold_pixel_distance_;
+    double COMMUNICATION_THRESHOLD_;
 
 
    /*!
@@ -129,6 +130,7 @@ private:
   void globalCircles0Callback(const MultiAgentCircleMap::CircleArray& msg);
   void globalCircles1Callback(const MultiAgentCircleMap::CircleArray& msg);
   void globalCircles2Callback(const MultiAgentCircleMap::CircleArray& msg);
+  double distanceFromCurrentRobot(Eigen::Vector3d other_robot_position);
 
 
 

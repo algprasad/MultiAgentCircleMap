@@ -114,6 +114,7 @@ bool RosHandle::readParametersYAML() {
     global_circles_subscriber_topic_0_ = config["sub_global_circles_0_topic"].as<std::string>();
     global_circles_subscriber_topic_1_ = config["sub_global_circles_1_topic"].as<std::string>();
     global_circles_subscriber_topic_2_ = config["sub_global_circles_2_topic"].as<std::string>();
+    COMMUNICATION_THRESHOLD_ = config["communication_threshold"].as<double_t >();
 
 
     return true;  //FIXME the yaml should return boolean to check if the parameters were read and then readParametersYAML can use that.
@@ -140,22 +141,42 @@ void RosHandle::pubGlobalDetectedCircles(CircleVec global_circle_vec) {
 
     pub_global_circles_.publish(circle_array);
 }
+
+double RosHandle::distanceFromCurrentRobot(Eigen::Vector3d other_robot_position){
+    Eigen::Vector3d current_robot_position(ros_data_.robot_pose_.pose.position.x,
+                                           ros_data_.robot_pose_.pose.position.y,
+                                           ros_data_.robot_pose_.pose.position.z);
+
+    Eigen::Vector3d temp_diff_vec  = current_robot_position  - other_robot_position;
+    double distance = temp_diff_vec.norm();
+    return distance;
+}
+
 //FIXME confirm if you can use the same callback function for all the three
 void RosHandle::globalCircles0Callback(const MultiAgentCircleMap::CircleArray& msg) {
     ros_data_.global_circle0_array_ = msg;
-    ros_data_.new_global_circle0_ = true;
+    //check distance from the current robot and set new_global_circle_x to false if its greater than the communication threshold
+    if(distanceFromCurrentRobot(Eigen::Vector3d(ros_data_.global_circle0_array_.robot_x,
+                                                ros_data_.global_circle0_array_.robot_y,
+                                                ros_data_.global_circle0_array_.robot_z)) < COMMUNICATION_THRESHOLD_) ros_data_.new_global_circle0_ = true;
 }
 
 void RosHandle::globalCircles1Callback(const MultiAgentCircleMap::CircleArray& msg) {
     ros_data_.global_circle1_array_ = msg;
-    ros_data_.new_global_circle1_ = true;
+    //check distance from the current robot and set new_global_circle_x to false if its greater than the communication threshold
+    if(distanceFromCurrentRobot(Eigen::Vector3d(ros_data_.global_circle1_array_.robot_x,
+                                                ros_data_.global_circle1_array_.robot_y,
+                                                ros_data_.global_circle1_array_.robot_z)) < COMMUNICATION_THRESHOLD_) ros_data_.new_global_circle1_ = true;
 
 }
 
 void RosHandle::globalCircles2Callback(const MultiAgentCircleMap::CircleArray& msg) {
 
     ros_data_.global_circle2_array_ = msg;
-    ros_data_.new_global_circle2_ = true;
+    //check distance from the current robot and set new_global_circle_x to false if its greater than the communication threshold
+    if(distanceFromCurrentRobot(Eigen::Vector3d(ros_data_.global_circle2_array_.robot_x,
+                                                ros_data_.global_circle2_array_.robot_y,
+                                                ros_data_.global_circle2_array_.robot_z)) < COMMUNICATION_THRESHOLD_) ros_data_.new_global_circle2_ = true;
 }
 
 
