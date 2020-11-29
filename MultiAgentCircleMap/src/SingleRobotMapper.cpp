@@ -129,13 +129,14 @@ void SingleRobotMapper::NearestNeighbourAssignment(CircleVec new_circle_vec) {
 
 void SingleRobotMapper::updateMap(MultiAgentCircleMap::RosHandle ros_handle) {
     current_image_ = ros_handle.ros_data_.image_;
-    if(this->first_image_){
+    if(this->first_image_ &&  current_image_.circle_vec_.circle_vec_.size() > 0){ // say this is the first image only if there are detected circles in the image
         global_circles_vec_.circle_vec_ = current_image_.circle_vec_.circle_vec_;
         first_image_ = false;
     }
     else{
-        if(current_image_.used_pixels_) HungarianAssignment(ros_handle);  //uses pixel coordinates
-        else NearestNeighbourAssignment();  //uses global position coordinates of the circle centres
+        /*if(current_image_.used_pixels_) HungarianAssignment(ros_handle);  //uses pixel coordinates
+        else NearestNeighbourAssignment();  //uses global position coordinates of the circle centres*/
+        NearestNeighbourAssignment();
     }
 
     this->publishImagewithIDs(ros_handle);

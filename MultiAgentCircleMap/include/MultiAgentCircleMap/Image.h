@@ -52,6 +52,7 @@ public:
             return;
         }
         cv_image_ = cv_ptr->image;
+        used_pixels_ = false;
         this->size_ = 0;
         detectCircles();
     }
@@ -61,7 +62,7 @@ public:
             geometry_msgs::PoseStamped robot_pose,
             bool used_pixels, int robot_index):
             robot_pose_(robot_pose),
-            used_pixels_(used_pixels),
+            used_pixels_(false),
             robot_index_(robot_index){
         cv_bridge::CvImagePtr cv_ptr;
         try
