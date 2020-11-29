@@ -65,9 +65,9 @@ void Image::assignPositionCoordinates2Circles() {
     std::string filename = "/home/alg/RoverLocalization/rover_localization_ws/src/MultiAgentCircleMap/MultiAgentCircleMap/config/constants_iris" + std::to_string(robot_index_) + ".yaml";
     YAML::Node config = YAML::LoadFile(filename);
     //YAML::Node config = YAML::LoadFile("/home/alg/RoverLocalization/rover_localization_ws/src/MultiAgentCircleMap/MultiAgentCircleMap/config/constants_iris0.yaml");
-    double INITIAL_X = config["initial_x"].as<double_t >();
+    /*double INITIAL_X = config["initial_x"].as<double_t >();
     double INITIAL_Y = config["initial_y"].as<double_t >();
-    double INITIAL_Z = config["initial_z"].as<double_t >();
+    double INITIAL_Z = config["initial_z"].as<double_t >();*/
 
     Eigen::Matrix3d K_MATRIX;
     std::vector<std::vector<double> > k_matrix_vec = config["k_matrix"].as<std::vector<std::vector<double>> >();
@@ -85,10 +85,10 @@ void Image::assignPositionCoordinates2Circles() {
         /***
          * Because we only get local position, and start from 0,0,0, the initial position is incorporated separately
          * */
-        wHr0 << 1, 0, 0, INITIAL_X,
+        /*wHr0 << 1, 0, 0, INITIAL_X,
                 0, 1, 0, INITIAL_Y,
                 0, 0, 1, INITIAL_Z,
-                0, 0, 0, 1;
+                0, 0, 0, 1;*/
 
         //TODO: get the orientation too
         Eigen::Quaterniond robot_orientation_eigen_quat;
@@ -104,7 +104,12 @@ void Image::assignPositionCoordinates2Circles() {
                 rmat(2,0), rmat(2,1), rmat(2,2), robot_pose_.pose.position.z,
                 0, 0, 0, 1;
 
-        wHr = wHr0*r0Hr;
+        wHr << rmat(0,0), rmat(0,1), rmat(0,2), robot_pose_.pose.position.x,
+                rmat(1,0), rmat(1,1), rmat(1,2), robot_pose_.pose.position.y,
+                rmat(2,0), rmat(2,1), rmat(2,2), robot_pose_.pose.position.z,
+                0, 0, 0, 1;
+
+        //wHr = wHr0*r0Hr;
         //std::cout<<"Robot pose: \n"<< wHr<<std::endl;
         double z = wHr(2,3);
         Eigen::Vector3d cTp; //position of pixel coordinate in the frame of camera

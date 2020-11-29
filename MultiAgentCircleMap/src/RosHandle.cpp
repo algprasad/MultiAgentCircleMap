@@ -90,6 +90,7 @@ void RosHandle::PoseCallback(const geometry_msgs::PoseStamped &message) {
 void RosHandle::imageCallback(const sensor_msgs::Image &message) {
     ros_data_.setROSImage(message);
     ros_data_.setBoolNewImage(true);
+    ros_data_.new_image_ = true;
     //Make the image object and assign the robot pose to the image object
     Image image(message, ros_data_.robot_pose_, false, robot_index_);
     if(image.circle_vec_.circle_vec_.size() > 0) ros_data_.setImage(image); //to make sure that when the circles are not there unnecessary calculations are not done
@@ -158,7 +159,8 @@ void RosHandle::globalCircles0Callback(const MultiAgentCircleMap::CircleArray& m
     //check distance from the current robot and set new_global_circle_x to false if its greater than the communication threshold
     if(distanceFromCurrentRobot(Eigen::Vector3d(ros_data_.global_circle0_array_.robot_x,
                                                 ros_data_.global_circle0_array_.robot_y,
-                                                ros_data_.global_circle0_array_.robot_z)) < COMMUNICATION_THRESHOLD_) ros_data_.new_global_circle0_ = true;
+                                                ros_data_.global_circle0_array_.robot_z)) < COMMUNICATION_THRESHOLD_)
+        ros_data_.new_global_circle0_ = true;
 }
 
 void RosHandle::globalCircles1Callback(const MultiAgentCircleMap::CircleArray& msg) {

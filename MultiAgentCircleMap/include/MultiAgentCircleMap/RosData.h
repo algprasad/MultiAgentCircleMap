@@ -53,6 +53,7 @@ public:
 
     void setROSImage(sensor_msgs::Image image){
         this->ros_image_ = image;
+        //new_image_ = true;
     }
 
     void setImage(Image image){
@@ -61,6 +62,7 @@ public:
 
     void setRobotPose(geometry_msgs::PoseStamped robot_pose) {
         robot_pose_ = robot_pose;
+        //new_robot_pose_ = true;
     }
 
     void resetBools(){
