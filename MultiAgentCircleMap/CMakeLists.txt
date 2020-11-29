@@ -141,6 +141,22 @@ target_link_libraries(${IRIS1}
 		#aruco gtsam
 		)
 
+add_executable(${IRIS2}
+		src/${PROJECT_NAME}_node_iris2.cpp
+		src/RosHandle.cpp
+		src/Image.cpp include/MultiAgentCircleMap/Image.h src/Circle.cpp include/MultiAgentCircleMap/Circle.h src/CircleVec.cpp include/MultiAgentCircleMap/CircleVec.h src/Graph.cpp include/MultiAgentCircleMap/Graph.h src/SingleRobotMapper.cpp include/MultiAgentCircleMap/SingleRobotMapper.h src/MultiRobotMapper.cpp include/MultiAgentCircleMap/MultiRobotMapper.h src/Hungarian.cpp include/MultiAgentCircleMap/Hungarian.h src/Visualization.cpp include/MultiAgentCircleMap/Visualization.h)
+
+add_dependencies(${IRIS2}
+		${catkin_EXPORTED_TARGETS}
+		)
+
+target_link_libraries(${IRIS2}
+		#  ${PROJECT_NAME}_core
+		${catkin_LIBRARIES} ${OpenCV_LIBS}
+		yaml-cpp
+		#aruco gtsam
+		)
+
 #############
 ## Install ##
 #############

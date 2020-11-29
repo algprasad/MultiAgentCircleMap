@@ -28,7 +28,7 @@ int main(int argc, char** argv)
       ros_handle.pubGlobalDetectedCircles(single_robot_mapper.getGlobalCircles());
 
       //TODO: change this for every robot node
-      if(ros_handle.ros_data_.isNewRobotPose() && (ros_handle.ros_data_.new_global_circle0_)){ // || ros_handle.ros_data_.new_global_circle2_){
+      if(ros_handle.ros_data_.isNewRobotPose() && ((ros_handle.ros_data_.new_global_circle0_ ) || (ros_handle.ros_data_.new_global_circle2_))){
           multi_robot_mapper.updateMap(ros_handle, single_robot_mapper);
           std::cout<<"\nOne of the robots is close \n" ;
 

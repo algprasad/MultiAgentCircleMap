@@ -55,9 +55,11 @@ Eigen::Vector2d Visualization::calculatePixelCoordinates(Eigen::Vector3d global_
     vec2eigenmat4d(c0Hc_vec, c0Hc);
     rHc = rHc0*c0Hc;
     //robot position from where the big image was taken
-    wHr << 1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 15,
+    Eigen::Quaterniond big_image_robot_quat(0.998, -0.0019, 0.0013, 0.05);
+    Eigen::Matrix3d rot(big_image_robot_quat);
+    wHr << rot(0,0), rot(0,1), rot(0,2), 0,
+           rot(1,0),rot(1,1), rot(1,2), -0.025,
+           rot(2,0), rot(2,1), rot(2,2), 14.15,
             0, 0, 0, 1;
 
     //calculate cTp using
@@ -75,7 +77,7 @@ Eigen::Vector2d Visualization::calculatePixelCoordinates(Eigen::Vector3d global_
 void Visualization::showLandmarksOnFullImage() {
 
     //get the large image and note its position.. use the positions of the global_circle_vec to show the position of the circles it has detected
-    cv::Mat img = cv::imread("/home/alg/RoverLocalization/rover_localization_ws/src/MultiAgentCircleMap/MultiAgentCircleMap/config/image.png");
+    cv::Mat img = cv::imread("/home/alg/RoverLocalization/rover_localization_ws/src/MultiAgentCircleMap/MultiAgentCircleMap/config/imagec.png");
 
     for(int i =0; i< this->global_circles_.circle_vec_.size(); i++){
         Eigen::Vector2d  px = calculatePixelCoordinates(this->global_circles_.circle_vec_[i].global_position_, robot_index_);

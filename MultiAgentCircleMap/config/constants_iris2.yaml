@@ -1,9 +1,9 @@
 ros_rate: 20
 sub_imu_topic: /mavros/imu/data
-robot_pose_topic: /uav1/pose_gt
-sub_image_topic: /iris_1/camera_iris/image_raw
-pub_detected_circles_image: /uav1/detected_circles_image
-global_circles_publisher_topic: /uav1/detected_circles
+robot_pose_topic: /uav2/pose_gt
+sub_image_topic: /iris_2/camera_iris/image_raw
+pub_detected_circles_image: /uav2/detected_circles_image
+global_circles_publisher_topic: /uav2/detected_circles
 
 
 #subscribe to other robot's local maps
