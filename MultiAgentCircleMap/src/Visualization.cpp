@@ -78,6 +78,7 @@ void Visualization::showLandmarksOnFullImage() {
 
     //get the large image and note its position.. use the positions of the global_circle_vec to show the position of the circles it has detected
     cv::Mat img = cv::imread("/home/alg/RoverLocalization/rover_localization_ws/src/MultiAgentCircleMap/MultiAgentCircleMap/config/imagec.png");
+    std::cout<<"Number of circles: "<<global_circles_.circle_vec_.size()<<std::endl;
 
     for(int i =0; i< this->global_circles_.circle_vec_.size(); i++){
         Eigen::Vector2d  px = calculatePixelCoordinates(this->global_circles_.circle_vec_[i].global_position_, robot_index_);

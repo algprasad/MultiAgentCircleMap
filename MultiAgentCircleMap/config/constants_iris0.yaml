@@ -2,7 +2,7 @@ ros_rate: 20
 sub_imu_topic: /mavros/imu/data
 robot_pose_topic: /uav0/pose_gt
 sub_image_topic: /iris_0/camera_iris/image_raw
-pub_detected_circles_image: uav0/detected_circles_image
+pub_detected_circles_image: /uav0/detected_circles_image
 global_circles_publisher_topic: /uav0/detected_circles
 
 
@@ -11,23 +11,24 @@ sub_global_circles_0_topic: /uav0/detected_circles
 sub_global_circles_1_topic: /uav1/detected_circles
 sub_global_circles_2_topic: /uav2/detected_circles
 
+
 #constants for the Hungarian Algo
 threshold_pixel_distance: 100
-communication_threshold: 3
+communication_threshold: 6
 
 
-
-# camera matrix
+#camera matrix
 k_matrix: [[476.7030836014194, 0.0, 400.5],
            [0.0, 476.7030836014194, 400.5],
-         [0.0, 0.0, 1.0]]
+           [0.0, 0.0, 1.0]]
 
 rHc0: [[0, 0, 1, 0],
-         [0, 1, 0, 0],
-         [-1, 0, 0, -0.07],
-         [0, 0, 0, 1]]
+       [0, 1, 0, 0],
+       [-1, 0, 0, -0.07],
+       [0, 0, 0, 1]]
 
+#optical axis
 c0Hc: [[0, 0, 1, 0],
-         [-1, 0, 0, 0],
-         [0, -1, 0, 0],
-         [0, 0, 0, 1]]
+       [-1, 0, 0, 0],
+       [0, -1, 0, 0],
+       [0, 0, 0, 1]]
