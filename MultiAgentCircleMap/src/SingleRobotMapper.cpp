@@ -191,13 +191,29 @@ void SingleRobotMapper::publishImagewithIDs(MultiAgentCircleMap::RosHandle& ros_
     ros_handle.pubDetectedCirclesImage(current_image_.getImageWithDetectedCircles());
 }
 
+/**Function to calculate the mean of two global positions.
+ * @param Circle other_circle - circle from otehr robot has global position
+ * @param int global_index - index in circle_vec of the corresponding matching circle in the global vector
+ * */
+Eigen::Vector3d SingleRobotMapper::findMeanGlobalPosition(Circle other_circle, int global_index){
+    Eigen::Vector3d mean_global_position = 0.5*(other_circle.global_position_ + global_circles_vec_.circle_vec_[global_index].global_position_);
+    return mean_global_position;
+
+}
 //assigning new IDs to the other robots' circlevec
 void SingleRobotMapper::assignGlobalID2NewVec(std::vector<int> assignment_vec, CircleVec new_circle_vec) {
 
     for(int i =0; i<new_circle_vec.circle_vec_.size(); i++){
         if(assignment_vec[i] != -1){ //that means there is an assignment
             //set the landmark ID equal to the ID of its global counter part //mostly for visualization purposes
+
             new_circle_vec.circle_vec_[i].setIndex(global_circles_vec_.circle_vec_[assignment_vec[i]].index_);
+
+            /** Assigning the new global position as the mean of the two points*/
+            Eigen::Vector3d mean_global_position = findMeanGlobalPosition(
+                    new_circle_vec.circle_vec_[i],
+                    assignment_vec[i]);
+            global_circles_vec_.circle_vec_[assignment_vec[i]].global_position_ = mean_global_position;
             new_circle_vec.circle_vec_[i].setBoolHasIndex(true);
         }
         else{ //i.e. if assignment_vec[i] == -1

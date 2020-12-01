@@ -42,6 +42,7 @@ public:
     void NearestNeighbourAssignment();
     void NearestNeighbourAssignment(CircleVec new_circle_vec);
     void assignGlobalID2CurrentVec(std::vector<int> assignment_vec);
+    Eigen::Vector3d findMeanGlobalPosition(Circle other_circle, int global_index);
     void assignGlobalID2NewVec(std::vector<int> assignment_vec, CircleVec new_circle_vec);
 
     CircleVec getGlobalCircles(){

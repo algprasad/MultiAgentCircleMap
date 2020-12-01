@@ -3,4 +3,4 @@
 threshold_pixel_distance: 100
 
 #NN distance Threshold
-nn_distance_threshold: 2
+nn_distance_threshold: 3
