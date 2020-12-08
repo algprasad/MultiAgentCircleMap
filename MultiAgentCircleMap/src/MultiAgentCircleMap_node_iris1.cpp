@@ -6,6 +6,8 @@
 #include "MultiAgentCircleMap/RosHandle.hpp"
 #include "MultiAgentCircleMap/MultiRobotMapper.h"
 #include "Utils.h"
+#include <MultiAgentCircleMap/ResultsManager.h>
+
 const int robot_index = 1; //Change this for the subsequent robots (i.e. #1,  #2)
 const int NUM_ROBOTS = 3;
 
@@ -20,7 +22,10 @@ int main(int argc, char** argv)
 
   //combine maps from other robots
   MultiRobotMapper multi_robot_mapper(robot_index);
-  while(ros::ok()){
+  //write number of landmarks to file
+  ResultsManager results_manager(robot_index, "/home/alg/RoverLocalization/rover_localization_ws/src/MultiAgentCircleMap/MultiAgentCircleMap/Results/CircleCounts/");
+
+    while(ros::ok()){
 
       if(ros_handle.ros_data_.isNewImage() && ros_handle.ros_data_.isNewRobotPose())
           single_robot_mapper.updateMap(ros_handle);
@@ -41,10 +46,14 @@ int main(int argc, char** argv)
       Visualization visualizer(single_robot_mapper.getGlobalCircles(), ros_handle.robot_index_);
       visualizer.showLandmarksOnFullImage();
 
+      //write number of landmarks to file
+      if(single_robot_mapper.getGlobalCircles().circle_vec_.size() >= 0) results_manager.writeLandmark2File(single_robot_mapper.getGlobalCircles().circle_vec_.size());
 
 
 
-      ros::spinOnce();
+
+
+        ros::spinOnce();
       ros_handle.rate_.sleep();
 
   }

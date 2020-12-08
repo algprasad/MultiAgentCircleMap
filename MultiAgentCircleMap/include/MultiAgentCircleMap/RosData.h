@@ -26,6 +26,8 @@ public:
     MultiAgentCircleMap::CircleArray global_circle0_array_; //global circles from other robots
     MultiAgentCircleMap::CircleArray global_circle1_array_; //global circles from other robots
     MultiAgentCircleMap::CircleArray global_circle2_array_; //global circles from other robots
+    MultiAgentCircleMap::CircleArray global_circle3_array_; //global circles from other robots
+    MultiAgentCircleMap::CircleArray global_circle4_array_; //global circles from other robots
 
     /** Bools to make sure new data is used*/
     bool new_angular_velocity_;
@@ -35,6 +37,8 @@ public:
     bool new_global_circle0_;
     bool new_global_circle1_;
     bool new_global_circle2_;
+    bool new_global_circle3_;
+    bool new_global_circle4_;
 
 
 
@@ -73,6 +77,8 @@ public:
         this->new_global_circle0_ = false;
         this->new_global_circle1_ = false;
         this->new_global_circle2_ = false;
+        this->new_global_circle3_ = false;
+        this->new_global_circle4_ = false;
     }
 
     void setBoolNewAngularVelocity(bool is_new_angular_velocity){

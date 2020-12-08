@@ -36,6 +36,14 @@ void MultiRobotMapper::updateMap(MultiAgentCircleMap::RosHandle ros_handle, Sing
         CircleVec other_robot_global_circles(ros_handle.ros_data_.global_circle2_array_);
         single_robot_mapper.updateMap(other_robot_global_circles);
     }
+    if(ros_handle.ros_data_.new_global_circle3_){
+        CircleVec other_robot_global_circles(ros_handle.ros_data_.global_circle3_array_);
+        single_robot_mapper.updateMap(other_robot_global_circles);
+    }
+    if(ros_handle.ros_data_.new_global_circle4_){
+        CircleVec other_robot_global_circles(ros_handle.ros_data_.global_circle4_array_);
+        single_robot_mapper.updateMap(other_robot_global_circles);
+    }
 
 
 

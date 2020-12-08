@@ -108,11 +108,13 @@ endforeach()
 set(IRIS0 ${PROJECT_NAME}_iris0)
 set(IRIS1 ${PROJECT_NAME}_iris1)
 set(IRIS2 ${PROJECT_NAME}_iris2) ## TODO: do the following three steps for all the drones
+set(IRIS3 ${PROJECT_NAME}_iris3)
+set(IRIS4 ${PROJECT_NAME}_iris4)
 
 add_executable(${IRIS0}
   src/${PROJECT_NAME}_node_iris0.cpp
         src/RosHandle.cpp
-        src/Image.cpp include/MultiAgentCircleMap/Image.h src/Circle.cpp include/MultiAgentCircleMap/Circle.h src/CircleVec.cpp include/MultiAgentCircleMap/CircleVec.h src/Graph.cpp include/MultiAgentCircleMap/Graph.h src/SingleRobotMapper.cpp include/MultiAgentCircleMap/SingleRobotMapper.h src/MultiRobotMapper.cpp include/MultiAgentCircleMap/MultiRobotMapper.h src/Hungarian.cpp include/MultiAgentCircleMap/Hungarian.h src/Utils.h src/Visualization.cpp include/MultiAgentCircleMap/Visualization.h)
+        src/Image.cpp include/MultiAgentCircleMap/Image.h src/Circle.cpp include/MultiAgentCircleMap/Circle.h src/CircleVec.cpp include/MultiAgentCircleMap/CircleVec.h src/Graph.cpp include/MultiAgentCircleMap/Graph.h src/SingleRobotMapper.cpp include/MultiAgentCircleMap/SingleRobotMapper.h src/MultiRobotMapper.cpp include/MultiAgentCircleMap/MultiRobotMapper.h src/Hungarian.cpp include/MultiAgentCircleMap/Hungarian.h src/Utils.h src/Visualization.cpp include/MultiAgentCircleMap/Visualization.h src/ResultsManager.cpp include/MultiAgentCircleMap/ResultsManager.h)
 
 add_dependencies(${IRIS0}
   ${catkin_EXPORTED_TARGETS}
@@ -128,7 +130,7 @@ target_link_libraries(${IRIS0}
 add_executable(${IRIS1}
 		src/${PROJECT_NAME}_node_iris1.cpp
 		src/RosHandle.cpp
-		src/Image.cpp include/MultiAgentCircleMap/Image.h src/Circle.cpp include/MultiAgentCircleMap/Circle.h src/CircleVec.cpp include/MultiAgentCircleMap/CircleVec.h src/Graph.cpp include/MultiAgentCircleMap/Graph.h src/SingleRobotMapper.cpp include/MultiAgentCircleMap/SingleRobotMapper.h src/MultiRobotMapper.cpp include/MultiAgentCircleMap/MultiRobotMapper.h src/Hungarian.cpp include/MultiAgentCircleMap/Hungarian.h src/Visualization.cpp include/MultiAgentCircleMap/Visualization.h)
+		src/Image.cpp include/MultiAgentCircleMap/Image.h src/Circle.cpp include/MultiAgentCircleMap/Circle.h src/CircleVec.cpp include/MultiAgentCircleMap/CircleVec.h src/Graph.cpp include/MultiAgentCircleMap/Graph.h src/SingleRobotMapper.cpp include/MultiAgentCircleMap/SingleRobotMapper.h src/MultiRobotMapper.cpp include/MultiAgentCircleMap/MultiRobotMapper.h src/Hungarian.cpp include/MultiAgentCircleMap/Hungarian.h src/Visualization.cpp include/MultiAgentCircleMap/Visualization.h src/ResultsManager.cpp include/MultiAgentCircleMap/ResultsManager.h)
 
 add_dependencies(${IRIS1}
 		${catkin_EXPORTED_TARGETS}
@@ -144,7 +146,7 @@ target_link_libraries(${IRIS1}
 add_executable(${IRIS2}
 		src/${PROJECT_NAME}_node_iris2.cpp
 		src/RosHandle.cpp
-		src/Image.cpp include/MultiAgentCircleMap/Image.h src/Circle.cpp include/MultiAgentCircleMap/Circle.h src/CircleVec.cpp include/MultiAgentCircleMap/CircleVec.h src/Graph.cpp include/MultiAgentCircleMap/Graph.h src/SingleRobotMapper.cpp include/MultiAgentCircleMap/SingleRobotMapper.h src/MultiRobotMapper.cpp include/MultiAgentCircleMap/MultiRobotMapper.h src/Hungarian.cpp include/MultiAgentCircleMap/Hungarian.h src/Visualization.cpp include/MultiAgentCircleMap/Visualization.h)
+		src/Image.cpp include/MultiAgentCircleMap/Image.h src/Circle.cpp include/MultiAgentCircleMap/Circle.h src/CircleVec.cpp include/MultiAgentCircleMap/CircleVec.h src/Graph.cpp include/MultiAgentCircleMap/Graph.h src/SingleRobotMapper.cpp include/MultiAgentCircleMap/SingleRobotMapper.h src/MultiRobotMapper.cpp include/MultiAgentCircleMap/MultiRobotMapper.h src/Hungarian.cpp include/MultiAgentCircleMap/Hungarian.h src/Visualization.cpp include/MultiAgentCircleMap/Visualization.h src/ResultsManager.cpp include/MultiAgentCircleMap/ResultsManager.h)
 
 add_dependencies(${IRIS2}
 		${catkin_EXPORTED_TARGETS}
@@ -156,6 +158,42 @@ target_link_libraries(${IRIS2}
 		yaml-cpp
 		#aruco gtsam
 		)
+
+add_executable(${IRIS3}
+		src/${PROJECT_NAME}_node_iris3.cpp
+		src/RosHandle.cpp
+		src/Image.cpp include/MultiAgentCircleMap/Image.h src/Circle.cpp include/MultiAgentCircleMap/Circle.h src/CircleVec.cpp include/MultiAgentCircleMap/CircleVec.h src/Graph.cpp include/MultiAgentCircleMap/Graph.h src/SingleRobotMapper.cpp include/MultiAgentCircleMap/SingleRobotMapper.h src/MultiRobotMapper.cpp include/MultiAgentCircleMap/MultiRobotMapper.h src/Hungarian.cpp include/MultiAgentCircleMap/Hungarian.h src/Utils.h src/Visualization.cpp include/MultiAgentCircleMap/Visualization.h src/ResultsManager.cpp include/MultiAgentCircleMap/ResultsManager.h)
+
+add_dependencies(${IRIS3}
+		${catkin_EXPORTED_TARGETS}
+		)
+
+target_link_libraries(${IRIS3}
+		#  ${PROJECT_NAME}_core
+		${catkin_LIBRARIES} ${OpenCV_LIBS}
+		yaml-cpp
+		#aruco gtsam
+		)
+
+add_executable(${IRIS4}
+		src/${PROJECT_NAME}_node_iris4.cpp
+		src/RosHandle.cpp
+		src/Image.cpp include/MultiAgentCircleMap/Image.h src/Circle.cpp include/MultiAgentCircleMap/Circle.h src/CircleVec.cpp include/MultiAgentCircleMap/CircleVec.h src/Graph.cpp include/MultiAgentCircleMap/Graph.h src/SingleRobotMapper.cpp include/MultiAgentCircleMap/SingleRobotMapper.h src/MultiRobotMapper.cpp include/MultiAgentCircleMap/MultiRobotMapper.h src/Hungarian.cpp include/MultiAgentCircleMap/Hungarian.h src/Utils.h src/Visualization.cpp include/MultiAgentCircleMap/Visualization.h src/ResultsManager.cpp include/MultiAgentCircleMap/ResultsManager.h)
+
+add_dependencies(${IRIS4}
+		${catkin_EXPORTED_TARGETS}
+		)
+
+target_link_libraries(${IRIS4}
+		#  ${PROJECT_NAME}_core
+		${catkin_LIBRARIES} ${OpenCV_LIBS}
+		yaml-cpp
+		#aruco gtsam
+		)
+
+
+
+
 
 #############
 ## Install ##

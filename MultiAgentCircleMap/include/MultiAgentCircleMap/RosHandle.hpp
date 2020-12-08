@@ -31,6 +31,8 @@ private:
     ros::Subscriber sub_global_circles_0_;
     ros::Subscriber sub_global_circles_1_;
     ros::Subscriber sub_global_circles_2_;
+    ros::Subscriber sub_global_circles_3_;
+    ros::Subscriber sub_global_circles_4_;
 
 
     //! ROS Publisher
@@ -46,6 +48,8 @@ private:
     std::string global_circles_subscriber_topic_0_;
     std::string global_circles_subscriber_topic_1_;
     std::string global_circles_subscriber_topic_2_;
+    std::string global_circles_subscriber_topic_3_;
+    std::string global_circles_subscriber_topic_4_;
 
 
     //! ROS topic names to publish to
@@ -130,6 +134,8 @@ private:
   void globalCircles0Callback(const MultiAgentCircleMap::CircleArray& msg);
   void globalCircles1Callback(const MultiAgentCircleMap::CircleArray& msg);
   void globalCircles2Callback(const MultiAgentCircleMap::CircleArray& msg);
+  void globalCircles3Callback(const MultiAgentCircleMap::CircleArray& msg);
+  void globalCircles4Callback(const MultiAgentCircleMap::CircleArray& msg);
   double distanceFromCurrentRobot(Eigen::Vector3d other_robot_position);
 
 

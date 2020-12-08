@@ -1,9 +1,9 @@
 ros_rate: 20
 sub_imu_topic: /mavros/imu/data
-robot_pose_topic: /uav2/pose_gt
-sub_image_topic: /iris_2/camera_iris/image_raw
-pub_detected_circles_image: /uav2/detected_circles_image
-global_circles_publisher_topic: /uav2/detected_circles
+robot_pose_topic: /uav3/pose_gt
+sub_image_topic: /iris_3/camera_iris/image_raw
+pub_detected_circles_image: /uav3/detected_circles_image
+global_circles_publisher_topic: /uav3/detected_circles
 
 
 #subscribe to other robot's local maps
@@ -24,12 +24,12 @@ k_matrix: [[476.7030836014194, 0.0, 400.5],
            [0.0, 0.0, 1.0]]
 
 rHc0: [[0, 0, 1, 0],
-        [0, 1, 0, 0],
-        [-1, 0, 0, -0.07],
-        [0, 0, 0, 1]]
+       [0, 1, 0, 0],
+       [-1, 0, 0, -0.07],
+       [0, 0, 0, 1]]
 
 #optical axis
 c0Hc: [[0, 0, 1, 0],
-        [-1, 0, 0, 0],
-        [0, -1, 0, 0],
-        [0, 0, 0, 1]]
+       [-1, 0, 0, 0],
+       [0, -1, 0, 0],
+       [0, 0, 0, 1]]
